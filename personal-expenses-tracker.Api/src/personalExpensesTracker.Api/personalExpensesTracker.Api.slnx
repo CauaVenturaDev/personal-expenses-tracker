@@ -1,5 +1,5 @@
 <Solution>
-  <Project Path="../personalExpensesTracker.Infrastructure/personalExpensesTracker.Data.csproj" />
+  <Project Path="../personalExpensesTracker.Data/personalExpensesTracker.Data.csproj" Id="36336f64-bac9-487e-8717-bd17053a104b" />
   <Project Path="../personalExpensesTracker.Models/personalExpensesTracker.Models.csproj" />
   <Project Path="../personalExpensesTracker.Repositories/personalExpensesTracker.Repositories.csproj" />
   <Project Path="../personalExpensesTracker.Services/personalExpensesTracker.Services.csproj" />
