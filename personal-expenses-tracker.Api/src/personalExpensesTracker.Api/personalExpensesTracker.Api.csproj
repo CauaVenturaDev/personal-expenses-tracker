@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\personalExpensesTracker.Data\personalExpensesTracker.Data.csproj" />
     <ProjectReference Include="..\personalExpensesTracker.Infrastructure\personalExpensesTracker.Data.csproj" />
     <ProjectReference Include="..\personalExpensesTracker.Models\personalExpensesTracker.Models.csproj" />
     <ProjectReference Include="..\personalExpensesTracker.Repositories\personalExpensesTracker.Repositories.csproj" />

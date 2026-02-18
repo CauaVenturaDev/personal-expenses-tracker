@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace personalExpensesTracker.Data.Scaffold;
+namespace personalExpensesTracker.Models;
 
 public partial class Income
 {
