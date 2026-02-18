@@ -1,0 +1,24 @@
+services:
+  personal-expenses-tracker-db:
+    image: postgres:17
+    container_name: personal-expenses-tracker-db
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=personal-expenses-tracker
+    ports:
+      - "5500:5432"
+    volumes:
+      - ./scripts:/docker-entrypoint-initdb.d
+      - personal-expenses-tracker-db-data:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - personal-expenses-tracker-network
+
+volumes:
+  personal-expenses-tracker-db-data:
+    name: personal-expenses-tracker-db-data
+
+networks:
+  personal-expenses-tracker-network:
+    external: true

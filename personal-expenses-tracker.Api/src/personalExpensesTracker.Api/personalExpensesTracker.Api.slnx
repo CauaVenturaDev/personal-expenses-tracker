@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="../personalExpensesTracker.Infrastructure/personalExpensesTracker.Infrastructure.csproj" />
+  <Project Path="personalExpensesTracker.Api.csproj" />
+</Solution>
