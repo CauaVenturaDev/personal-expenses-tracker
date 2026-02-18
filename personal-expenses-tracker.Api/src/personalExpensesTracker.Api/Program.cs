@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using personalExpensesTracker.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddEndpointsApiExplorer();
@@ -17,6 +20,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+builder.Services.AddDbContext<PersonalExpensesTrackerContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 app.UseAuthorization();
 
