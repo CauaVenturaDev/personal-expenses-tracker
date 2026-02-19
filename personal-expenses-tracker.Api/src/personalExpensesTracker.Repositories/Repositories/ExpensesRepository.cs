@@ -11,19 +11,22 @@ public class ExpensesRepository(PersonalExpensesTrackerContext context) : IExpen
 {
     private readonly PersonalExpensesTrackerContext _context = context;
 
-    public async Task AddExpenseAsync(Expense expense)
+    public async Task<Expense> AddExpenseAsync(Expense expense)
     {
         await _context.Expenses.Add(expense);
         await _context.SaveChangesAsync();
+        return expense;
     }
 
     public async Task DeleteExpenseAsync(int id)
     {
-        var affected = await _context.Expenses
-            .Where(e => e.Id == id)
-            .ExecuteDeleteAsync();
+        var expense = await _context.Expenses.FindAsync(id);
 
-        return affected > 0;
+        if (expense == null)
+            throw new KeyNotFoundException("Expense not found.");
+
+        _context.Expenses.Remove(expense);
+        await _context.SaveChangesAsync();
     }
 
     public async Task<List<Expense>> GetAllExpensesAsync()
@@ -32,20 +35,30 @@ public class ExpensesRepository(PersonalExpensesTrackerContext context) : IExpen
             .ToListAsync();
     }
 
-    public Task<Expense?> GetExpenseByIdAsync(int id)
+    public async Task<Expense?> GetExpenseByIdAsync(int id)
     {
-        return _context.Expenses
-            .FirstOrDefaultAsync(e => e.Id == id);
+        var expense = await _context.Expenses.FindAsync(id);
+
+        if (expense == null)
+            throw new KeyNotFoundException("Expense not found.");
+
+        return expense;
     }
 
-    public Task UpdateExpenseAsync(Expense expense)
+    public async Task UpdateExpenseAsync(Expense expense)
     {
-        return _context.Expenses.Where(e => e.Id == expense.Id)
-            .ExecuteUpdateAsync(setters =>
-                setters
-                    .SetProperty(e => e.Description, expense.Description)
-                    .SetProperty(e => e.Amount, expense.Amount)
-                    .SetProperty(e => e.Category, expense.Category)
-                    .SetProperty(e => e.Date, expense.Date));
+        var existingExpense = await _context.Expenses.FindAsync(expense.Id);
+
+        if (existingExpense == null)
+        {
+            throw new KeyNotFoundException("Expense not found.");
+        }
+            existingExpense.Description = expense.Description;
+            existingExpense.Amount = expense.Amount;
+            existingExpense.Category = expense.Category;
+            existingExpense.Date = expense.Date;
+
+        await _context.SaveChangesAsync();
+
     }
 }
