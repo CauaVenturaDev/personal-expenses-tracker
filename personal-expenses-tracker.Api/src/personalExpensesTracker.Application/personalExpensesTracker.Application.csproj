@@ -6,4 +6,13 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\personalExpensesTracker.Domain\personalExpensesTracker.Domain.csproj" />
+    <ProjectReference Include="..\personalExpensesTracker.Infrastructure\personalExpensesTracker.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="DTOs\" />
+  </ItemGroup>
+
 </Project>

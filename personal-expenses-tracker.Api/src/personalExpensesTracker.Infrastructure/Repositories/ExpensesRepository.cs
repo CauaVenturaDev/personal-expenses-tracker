@@ -1,12 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Update;
 using personalExpensesTracker.Domain.Models;
-using personalExpensesTracker.Infrastructure;
 using personalExpensesTracker.Infrastructure.Interfaces;
 
 namespace personalExpensesTracker.Infrastructure.Repositories;
 
-public class ExpensesRepository(PersonalExpensesTrackerContext context) : IExpensesRepository
+public class ExpensesRepository(PersonalExpensesTrackerContext context) : Interfaces.IExpensesRepository
 {
     private readonly PersonalExpensesTrackerContext _context = context;
 
@@ -17,61 +15,34 @@ public class ExpensesRepository(PersonalExpensesTrackerContext context) : IExpen
         return expense;
     }
 
-    public async Task DeleteExpenseAsync(int id)
-    {
-        var expense = await _context.Expenses.FindAsync(id);
 
-        if (expense == null)
-            throw new KeyNotFoundException("Expense not found.");
-
-        _context.Expenses.Remove(expense);
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task<List<Expense>> GetAllExpensesAsync()
+    public async Task<List<Expense>> GetExpensesByMonthAsync(int month, int year)
     {
         return await _context.Expenses
+            .Where(e => e.Date.Month == month && e.Date.Year == year)
             .ToListAsync();
-    }
 
+    }
+    public async Task<decimal> GetTotalByMonthAsync(int month, int year)
+    {
+        return await _context.Expenses
+            .Where(e => e.Date.Month == month && e.Date.Year == year)
+            .SumAsync(e => e.Amount);
+    }
     public async Task<Expense> GetExpenseByIdAsync(int id)
     {
-        var expense = await _context.Expenses.FindAsync(id);
-
-        if (expense == null)
-            throw new KeyNotFoundException("Expense not found.");
-
-        return expense;
+        return await _context.Expenses.FindAsync(id);
     }
 
-    public Task<List<Expense>> GetExpensesByCategoryAndMonthAsync(string category, int month)
+    public async Task DeleteExpenseAsync(Expense expense)
     {
-        throw new NotImplementedException();
-    }
-
-    public Task<List<Expense>> GetExpensesByCategoryAsync(string category)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<List<Expense>> GetExpensesByMonthAsync(int month, int year)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<List<Expense>> GetTotalByCategoryAsync(int month, int year)
-    {
-        throw new NotImplementedException();
+        _context.Expenses.Remove(expense);
+        await _context.SaveChangesAsync();
     }
 
     public async Task UpdateExpenseAsync(Expense expense)
     {
         var existingExpense = await _context.Expenses.FindAsync(expense.Id);
-
-        if (existingExpense == null)
-        {
-            throw new KeyNotFoundException("Expense not found.");
-        }
             existingExpense.Description = expense.Description;
             existingExpense.Amount = expense.Amount;
             existingExpense.Category = expense.Category;
