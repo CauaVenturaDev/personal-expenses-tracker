@@ -1,11 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Update;
-using Microsoft.VisualStudio.Services.TestManagement.TestPlanning.WebApi;
-using personalExpensesTracker.Data;
-using personalExpensesTracker.Models.Models;
-using personalExpensesTracker.Repositories.Interfaces;
+using personalExpensesTracker.Domain.Models;
+using personalExpensesTracker.Infrastructure;
+using personalExpensesTracker.Infrastructure.Interfaces;
 
-namespace personalExpensesTracker.Repositories.Repositories;
+namespace personalExpensesTracker.Infrastructure.Repositories;
 
 public class ExpensesRepository(PersonalExpensesTrackerContext context) : IExpensesRepository
 {
@@ -13,7 +12,7 @@ public class ExpensesRepository(PersonalExpensesTrackerContext context) : IExpen
 
     public async Task<Expense> AddExpenseAsync(Expense expense)
     {
-        await _context.Expenses.Add(expense);
+        await _context.AddAsync(expense);
         await _context.SaveChangesAsync();
         return expense;
     }
@@ -35,7 +34,7 @@ public class ExpensesRepository(PersonalExpensesTrackerContext context) : IExpen
             .ToListAsync();
     }
 
-    public async Task<Expense?> GetExpenseByIdAsync(int id)
+    public async Task<Expense> GetExpenseByIdAsync(int id)
     {
         var expense = await _context.Expenses.FindAsync(id);
 
@@ -43,6 +42,26 @@ public class ExpensesRepository(PersonalExpensesTrackerContext context) : IExpen
             throw new KeyNotFoundException("Expense not found.");
 
         return expense;
+    }
+
+    public Task<List<Expense>> GetExpensesByCategoryAndMonthAsync(string category, int month)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<List<Expense>> GetExpensesByCategoryAsync(string category)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<List<Expense>> GetExpensesByMonthAsync(int month, int year)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<List<Expense>> GetTotalByCategoryAsync(int month, int year)
+    {
+        throw new NotImplementedException();
     }
 
     public async Task UpdateExpenseAsync(Expense expense)

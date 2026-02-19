@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
 using Microsoft.EntityFrameworkCore;
-using personalExpensesTracker.Models;
-using personalExpensesTracker.Models.Models;
+using personalExpensesTracker.Domain.Models;
 
-namespace personalExpensesTracker.Data;
+namespace personalExpensesTracker.Infrastructure;
 
 public partial class PersonalExpensesTrackerContext : DbContext
 {

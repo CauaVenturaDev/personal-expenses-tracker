@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -8,15 +8,15 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.3" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.4" />
+	  <PackageReference Include="Npgsql" Version="10.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\personalExpensesTracker.Data\personalExpensesTracker.Data.csproj" />
-    <ProjectReference Include="..\personalExpensesTracker.Infrastructure\personalExpensesTracker.Data.csproj" />
-    <ProjectReference Include="..\personalExpensesTracker.Models\personalExpensesTracker.Models.csproj" />
-    <ProjectReference Include="..\personalExpensesTracker.Repositories\personalExpensesTracker.Repositories.csproj" />
-    <ProjectReference Include="..\personalExpensesTracker.Services\personalExpensesTracker.Services.csproj" />
+    <ProjectReference Include="..\personalExpensesTracker.Application\personalExpensesTracker.Application.csproj" />
+    <ProjectReference Include="..\personalExpensesTracker.Domain\personalExpensesTracker.Domain.csproj" />
+    <ProjectReference Include="..\personalExpensesTracker.Infrastructure\personalExpensesTracker.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

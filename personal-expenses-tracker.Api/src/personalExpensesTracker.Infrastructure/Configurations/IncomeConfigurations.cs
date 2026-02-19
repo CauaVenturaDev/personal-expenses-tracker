@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using personalExpensesTracker.Models.Models;
+using personalExpensesTracker.Domain.Models;
 
-namespace personalExpensesTracker.Data.Configurations;
+namespace personalExpensesTracker.Infrastructure.Configurations;
 
 public class IncomeConfigurations : IEntityTypeConfiguration<Income>
 {
