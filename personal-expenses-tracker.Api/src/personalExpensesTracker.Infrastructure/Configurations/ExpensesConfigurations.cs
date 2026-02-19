@@ -1,21 +1,24 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using personalExpensesTracker.Models;
+using personalExpensesTracker.Domain.Models;
 
-namespace personalExpensesTracker.Data.Configurations;
+namespace personalExpensesTracker.Infrastructure.Configurations;
 
-public class IncomeConfigurations : IEntityTypeConfiguration<Income>
+public class ExpensesConfigurations : IEntityTypeConfiguration<Expense>
 {
-    public void Configure(EntityTypeBuilder<Income> entity)
+    public void Configure(EntityTypeBuilder<Expense> entity)
     {
-        entity.HasKey(e => e.Id).HasName("income_pkey");
+        // Primary key 
+        entity.HasKey(e => e.Id).HasName("expenses_pkey");
 
-        entity.ToTable("income");
+        // Table mapping
+        entity.ToTable("expenses");
 
+        // Column mappings
         entity.Property(e => e.Id).HasColumnName("id");
         entity.Property(e => e.Amount)
             .HasPrecision(10, 2)
-            .HasColumnName("amount");
+            .HasColumnName("amount"); 
         entity.Property(e => e.Category)
             .HasMaxLength(255)
             .HasColumnName("category");

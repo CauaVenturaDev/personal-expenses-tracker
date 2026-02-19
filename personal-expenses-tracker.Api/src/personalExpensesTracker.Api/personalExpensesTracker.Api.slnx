@@ -1,7 +1,6 @@
 <Solution>
-  <Project Path="../personalExpensesTracker.Data/personalExpensesTracker.Data.csproj" Id="36336f64-bac9-487e-8717-bd17053a104b" />
-  <Project Path="../personalExpensesTracker.Models/personalExpensesTracker.Models.csproj" />
-  <Project Path="../personalExpensesTracker.Repositories/personalExpensesTracker.Repositories.csproj" />
-  <Project Path="../personalExpensesTracker.Services/personalExpensesTracker.Services.csproj" />
+  <Project Path="../personalExpensesTracker.Application/personalExpensesTracker.Application.csproj" Id="e0d34b54-c911-44f3-8b27-d8d384383eff" />
+  <Project Path="../personalExpensesTracker.Domain/personalExpensesTracker.Domain.csproj" Id="2a391dff-6897-4be0-8b59-ca8bd8fbbf94" />
+  <Project Path="../personalExpensesTracker.Infrastructure/personalExpensesTracker.Infrastructure.csproj" Id="386612c0-c92b-4d6d-af15-c8db7cea7fcd" />
   <Project Path="personalExpensesTracker.Api.csproj" />
 </Solution>
