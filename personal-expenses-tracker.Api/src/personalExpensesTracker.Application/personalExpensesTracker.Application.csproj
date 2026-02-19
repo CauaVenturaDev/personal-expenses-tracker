@@ -11,8 +11,4 @@
     <ProjectReference Include="..\personalExpensesTracker.Infrastructure\personalExpensesTracker.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="DTOs\" />
-  </ItemGroup>
-
 </Project>
