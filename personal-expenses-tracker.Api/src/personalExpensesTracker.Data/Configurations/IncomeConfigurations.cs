@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using personalExpensesTracker.Models;
+using personalExpensesTracker.Models.Models;
 
 namespace personalExpensesTracker.Data.Configurations;
 
@@ -8,10 +8,13 @@ public class IncomeConfigurations : IEntityTypeConfiguration<Income>
 {
     public void Configure(EntityTypeBuilder<Income> entity)
     {
+        // Primary key
         entity.HasKey(e => e.Id).HasName("income_pkey");
 
+        // Table mapping
         entity.ToTable("income");
 
+        // Column mappings
         entity.Property(e => e.Id).HasColumnName("id");
         entity.Property(e => e.Amount)
             .HasPrecision(10, 2)

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace personalExpensesTracker.Models;
+namespace personalExpensesTracker.Models.Models;
 
-public partial class Income
+public partial class Expense
 {
     public int Id { get; set; }
 
