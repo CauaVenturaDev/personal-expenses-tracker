@@ -9,7 +9,7 @@ public static class IfrastructureModule
     {
         // Configure the database connection
         services.AddDbContext<PersonalExpensesTrackerContext>(options =>
-            options.UseNpgsql("Server:localhost;Port=5500;Database=personal-expenses-tracker;Username=admin;Password=admin;"));
+            options.UseNpgsql("Server=localhost;Port=5500;Database=personal-expenses-tracker;Username=admin;Password=admin;"));
 
         return services;
     }

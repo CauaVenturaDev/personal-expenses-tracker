@@ -6,7 +6,7 @@ using personalExpensesTracker.Infrastructure.Repositories;
 
 namespace personalExpensesTracker.Application.Services;
 
-public class ExpensesServices(ExpensesRepository repository) : IExpensesServices
+public class ExpensesServices(IExpensesRepository repository) : IExpensesServices
 {
     private readonly IExpensesRepository _respository = repository;
 
@@ -58,19 +58,21 @@ public class ExpensesServices(ExpensesRepository repository) : IExpensesServices
 
 
     // Atualiza uma despesa existente
-    public async Task<bool> UpdateAsync(int id, ExpenseCreateDTO dto)
+    public async Task<Expense> UpdateAsync(int id, ExpenseCreateDTO dto)
     {
         var existingExpense = await _respository.GetExpenseByIdAsync(id);
 
-        if (existingExpense == null) return false;
-
+        if (existingExpense == null)
+        {
+            throw new KeyNotFoundException($"Expense with id {id} not found.");
+        }
         existingExpense.Description = dto.Description;
         existingExpense.Amount = dto.Amount;
         existingExpense.Category = dto.Category;
         existingExpense.Date = dto.Date;
         
         await _respository.UpdateExpenseAsync(existingExpense);
-        return true;
+        return existingExpense;
 
     }
 

@@ -38,7 +38,7 @@ public class ExpensesRepository(PersonalExpensesTrackerContext context) : Interf
 
 
     // Recupera uma despesa específica pelo seu id
-    public async Task<Expense> GetExpenseByIdAsync(int id)
+    public async Task<Expense?> GetExpenseByIdAsync(int id)
     {
         return await _context.Expenses.FindAsync(id);
     }
