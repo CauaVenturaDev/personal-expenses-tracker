@@ -10,5 +10,6 @@ public interface IExpensesServices
     Task<decimal> GetTotalByMonthAsync(int month, int year);
     Task<List<CategorySumaryExpenseDto>> GetTotalByCategoryAsync(int month, int year);
     Task<Expense> UpdateAsync(int id, ExpenseCreateDTO expenseCreateDTO);
-    Task DeleteAsync(int id); 
+    Task DeleteAsync(int id);
+    Task DeleteAllAsync();
 }

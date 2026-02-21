@@ -15,6 +15,11 @@ public class IncomeRepository(PersonalExpensesTrackerContext context) : IIncomeR
         return income;
     }
 
+    public async Task<List<Income>> GetAllIncomes()
+    {
+        return await _context.Incomes.ToListAsync();
+    }
+
     public async Task<Income?> GetIncomeByIdAsync(int id)
     {
        return await _context.Incomes.FindAsync(id);
@@ -55,4 +60,11 @@ public class IncomeRepository(PersonalExpensesTrackerContext context) : IIncomeR
         await _context.SaveChangesAsync();
     }
 
+    public async Task<List<Income>> DeleteAllIncomesAsync()
+    {
+        var allIncomes = await _context.Incomes.ToListAsync();
+        _context.Incomes.RemoveRange(allIncomes);
+        await _context.SaveChangesAsync();
+        return allIncomes;
+    }
 }

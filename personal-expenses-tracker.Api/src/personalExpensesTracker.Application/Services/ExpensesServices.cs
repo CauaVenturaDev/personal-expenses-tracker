@@ -89,4 +89,9 @@ public class ExpensesServices(IExpensesRepository repository) : IExpensesService
         await _respository.DeleteExpenseAsync(expense);
     }
 
+    public async Task DeleteAllAsync()
+    {
+        await _respository.DeleteAllAsync();
+    }
+
 }

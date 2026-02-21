@@ -44,6 +44,23 @@ public class ExpensesRepository(PersonalExpensesTrackerContext context) : IExpen
         return await _context.Expenses.FindAsync(id);
     }
 
+    // Atualiza uma despesa existente no banco de dados
+    public async Task UpdateExpenseAsync(Expense expense)
+    {
+        var existingExpense = await _context.Expenses.FindAsync(expense.Id);
+        if (existingExpense == null)
+        {
+            throw new Exception("Expense not found");
+        }
+
+        existingExpense.Description = expense.Description;
+        existingExpense.Amount = expense.Amount;
+        existingExpense.Category = expense.Category;
+        existingExpense.Date = expense.Date;
+
+        await _context.SaveChangesAsync();
+
+    }
 
     // Exclui uma despesa do banco de dados
     public async Task DeleteExpenseAsync(Expense expense)
@@ -52,23 +69,12 @@ public class ExpensesRepository(PersonalExpensesTrackerContext context) : IExpen
         await _context.SaveChangesAsync();
     }
 
-
-    // Atualiza uma despesa existente no banco de dados
-    public async Task UpdateExpenseAsync(Expense expense)
+    public async Task<List<Expense>> DeleteAllAsync()
     {
-        var existingExpense = await _context.Expenses.FindAsync(expense.Id);
-        if (existingExpense == null) {
-            throw new Exception("Expense not found");
-        }
-
-        existingExpense.Description = expense.Description;
-            existingExpense.Amount = expense.Amount;
-            existingExpense.Category = expense.Category;
-            existingExpense.Date = expense.Date;
-
+        var allExpenses = await _context.Expenses.ToListAsync();
+        _context.Expenses.RemoveRange(allExpenses);
         await _context.SaveChangesAsync();
-
+        return allExpenses;
     }
-
 }
 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using personalExpensesTracker.Application.DTOs.IncomeDTOs.Requests;
 using personalExpensesTracker.Application.Interfaces;
+using personalExpensesTracker.Application.Services;
 using personalExpensesTracker.Domain.Models;
 
 namespace personalExpensesTracker.Api.Controllers
@@ -11,6 +12,27 @@ namespace personalExpensesTracker.Api.Controllers
     {
         private readonly IIncomeServices _incomeServices = incomeServices;
 
+
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] IncomeCreateDTO incomeCreateDTO)
+        {
+            var income = new Income
+            {
+                Description = incomeCreateDTO.Description,
+                Amount = incomeCreateDTO.Amount,
+                Category = incomeCreateDTO.Category,
+                Date = incomeCreateDTO.Date
+            };
+            await _incomeServices.AddAsync(income);
+            return Ok(income);
+        }
+
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            var incomes = _incomeServices.GetAllIncomesAsync().Result;
+            return Ok(incomes);
+        }
 
         [HttpGet("mes-ano")]
         public async Task<IActionResult> Get(int mês, int ano)
@@ -34,29 +56,12 @@ namespace personalExpensesTracker.Api.Controllers
             });
         }
 
-
         [HttpGet("total/categoria")]
         public async Task<ActionResult<List<CategorySumaryIncomeDto>>> GetTotalByCategory([FromQuery] int mês, [FromQuery] int ano)
         {
             var resultado = await _incomeServices.GetTotalByCategoryAsync(mês, ano);
             return Ok(resultado);
         }
-
-
-        [HttpPost]
-        public async Task<IActionResult> Post([FromBody] IncomeCreateDTO incomeCreateDTO)
-        {
-            var income = new Income
-            {
-                Description = incomeCreateDTO.Description,
-                Amount = incomeCreateDTO.Amount,
-                Category = incomeCreateDTO.Category,
-                Date = incomeCreateDTO.Date
-            };
-            await _incomeServices.AddAsync(income);
-            return Ok(income);
-        }
-
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] IncomeCreateDTO incomeCreateDTO)
@@ -75,6 +80,13 @@ namespace personalExpensesTracker.Api.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             await _incomeServices.DeleteAsync(id);
+            return NoContent();
+        }
+
+        [HttpDelete("delete-all")]
+        public async Task<IActionResult> DeleteAll()
+        {
+            await _incomeServices.DeleteAllAsync();
             return NoContent();
         }
     }

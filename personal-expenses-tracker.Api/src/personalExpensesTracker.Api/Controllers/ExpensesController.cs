@@ -63,7 +63,7 @@ namespace personalExpensesTracker.Api.Controllers
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] ExpenseCreateDTO expenseCreateDTO)
-        { 
+        {
             var updated = await _expensesServices.UpdateAsync(id, expenseCreateDTO);
             if (expenseCreateDTO == null)
             {
@@ -78,6 +78,12 @@ namespace personalExpensesTracker.Api.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             await _expensesServices.DeleteAsync(id);
+            return NoContent();
+        }
+        [HttpDelete("delete-all")]
+        public async Task<IActionResult> DeleteAll()
+        {
+            await _expensesServices.DeleteAllAsync();
             return NoContent();
         }
     }
