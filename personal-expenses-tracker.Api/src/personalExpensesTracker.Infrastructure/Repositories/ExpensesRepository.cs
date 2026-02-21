@@ -69,4 +69,6 @@ public class ExpensesRepository(PersonalExpensesTrackerContext context) : IExpen
         await _context.SaveChangesAsync();
 
     }
+
 }
+
