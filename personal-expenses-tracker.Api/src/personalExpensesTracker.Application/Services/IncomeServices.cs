@@ -12,13 +12,17 @@ public class IncomeServices(IIncomeRepository incomeRepository) : IIncomeService
 
     public async Task<Income> AddAsync(Income income)
     {
+        if (income.Amount == 0)
+        {
+            throw new Exception("Amount must be greater than zero.");
+        }
         return await _incomeRepository.AddIncomeAsync(income);
     }
 
    
     public async Task<List<Income>> GetByMonthAsync(int month, int year)
     {
-        return await GetByMonthAsync(month, year);
+        return await _incomeRepository.GetIncomesByMonthAsync (month, year);
     }
 
     public async Task<List<CategorySumaryIncomeDto>> GetTotalByCategoryAsync(int month, int year)
