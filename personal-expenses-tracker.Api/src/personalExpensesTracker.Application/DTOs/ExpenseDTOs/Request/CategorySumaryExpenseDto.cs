@@ -1,6 +1,6 @@
 ﻿namespace personalExpensesTracker.Application.DTOs.ExpenseDTOs.Request;
 
-public class CategorySumaryDto
+public class CategorySumaryExpenseDto
 {
     public string Category { get; set; } = string.Empty;
     public decimal Total { get; set; }

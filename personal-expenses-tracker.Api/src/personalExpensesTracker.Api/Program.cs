@@ -9,10 +9,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.RegisterServices();
 
+
+// Registra repositórios e serviços no contêiner de injeção de dependência
 builder.Services.AddScoped<IExpensesRepository, ExpensesRepository>();
 builder.Services.AddScoped<IExpensesServices, ExpensesServices>();
 
-// Add services to the container.
+// Adiciona serviços ao conteiner.
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

@@ -10,6 +10,8 @@ public class ExpensesServices(IExpensesRepository repository) : IExpensesService
 {
     private readonly IExpensesRepository _respository = repository;
 
+
+    // Adiciona uma nova despesa, validando se o valor é maior que zero
     public async Task<Expense> AddAsync(Expense expense)
     {
         if (expense.Amount == 0)
@@ -28,19 +30,17 @@ public class ExpensesServices(IExpensesRepository repository) : IExpensesService
 
 
     //Lista as despesas por categoria, total e porcentagem do total mensal
-    public async Task<List<CategorySumaryDto>> GetTotalByCategoryAsync(int month, int year)
+    public async Task<List<CategorySumaryExpenseDto>> GetTotalByCategoryAsync(int month, int year)
     {
-        // chama o repositório para obter as despesas do mês e ano especificados
         var expenses = await _respository.GetExpensesByMonthAsync(month, year);
         if (!expenses.Any())
-                return new List<CategorySumaryDto>();
-        // calcula o total mensal para calcular a porcentagem de cada categoria
+                return new List<CategorySumaryExpenseDto>();
+
         var totalMonth = expenses.Sum(e => e.Amount);
 
-        // agrupa as despesas por categoria, calcula o total e a porcentagem para cada categoria e retorna uma lista de CategorySumaryDto
         var result = expenses
             .GroupBy(e => e.Category)
-            .Select(g => new CategorySumaryDto
+            .Select(g => new CategorySumaryExpenseDto
             {
                 Category = g.Key,
                 Total = g.Sum(e => e.Amount),

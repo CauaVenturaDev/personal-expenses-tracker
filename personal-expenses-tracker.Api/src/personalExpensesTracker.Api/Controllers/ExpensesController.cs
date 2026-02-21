@@ -39,7 +39,7 @@ namespace personalExpensesTracker.Api.Controllers
 
 
         [HttpGet("total/categoria")]
-        public async Task<ActionResult<List<CategorySumaryDto>>> GetTotalByCategory([FromQuery] int mês, [FromQuery] int ano)
+        public async Task<ActionResult<List<CategorySumaryExpenseDto>>> GetTotalByCategory([FromQuery] int mês, [FromQuery] int ano)
         {
             var resultado = await _expensesServices.GetTotalByCategoryAsync(mês, ano);
             return Ok(resultado);

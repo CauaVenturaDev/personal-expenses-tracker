@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using personalExpensesTracker.Domain.Models;
+using personalExpensesTracker.Infrastructure.Interfaces;
 
 
 namespace personalExpensesTracker.Infrastructure.Repositories;
 
-public class ExpensesRepository(PersonalExpensesTrackerContext context) : Interfaces.IExpensesRepository
+public class ExpensesRepository(PersonalExpensesTrackerContext context) : IExpensesRepository
 {
     private readonly PersonalExpensesTrackerContext _context = context;
 
