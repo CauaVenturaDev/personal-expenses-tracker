@@ -8,13 +8,15 @@ public class IncomeConfigurations : IEntityTypeConfiguration<Income>
 {
     public void Configure(EntityTypeBuilder<Income> entity)
     {
-        // Primary key
+        // Chave primária
         entity.HasKey(e => e.Id).HasName("income_pkey");
 
-        // Table mapping
+
+        // mapeamento da tabela
         entity.ToTable("income");
 
-        // Column mappings
+
+        // mapeamento das colunas
         entity.Property(e => e.Id).HasColumnName("id");
         entity.Property(e => e.Amount)
             .HasPrecision(10, 2)

@@ -1,9 +1,22 @@
 using Microsoft.EntityFrameworkCore;
+using personalExpensesTracker.Application.Interfaces;
+using personalExpensesTracker.Application.Services;
 using personalExpensesTracker.Infrastructure;
+using personalExpensesTracker.Infrastructure.Interfaces;
+using personalExpensesTracker.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.RegisterServices();
+
+// Registra repositórios e serviços no contêiner de injeção de dependência
+builder.Services.AddScoped<IExpensesRepository, ExpensesRepository>();
+builder.Services.AddScoped<IExpensesServices, ExpensesServices>();
+
+builder.Services.AddScoped<IIncomeRepository, IncomeRepository>();
+builder.Services.AddScoped<IIncomeServices, IncomeServices>();
+
+// Adiciona serviços ao conteiner.
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -23,10 +36,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-// Configure the database connection
-builder.Services.AddDbContext<PersonalExpensesTrackerContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 app.UseAuthorization();
 

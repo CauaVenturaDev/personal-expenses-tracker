@@ -8,13 +8,15 @@ public class ExpensesConfigurations : IEntityTypeConfiguration<Expense>
 {
     public void Configure(EntityTypeBuilder<Expense> entity)
     {
-        // Primary key 
+        // Chave primária 
         entity.HasKey(e => e.Id).HasName("expenses_pkey");
 
-        // Table mapping
+
+        // Mapeamento da tabela
         entity.ToTable("expenses");
 
-        // Column mappings
+
+        // Mapeamento das colunas
         entity.Property(e => e.Id).HasColumnName("id");
         entity.Property(e => e.Amount)
             .HasPrecision(10, 2)

@@ -10,4 +10,5 @@ public interface IExpensesRepository
     Task<List<Expense>> GetExpensesByMonthAsync(int month, int year);
     Task UpdateExpenseAsync(Expense expense);
     Task DeleteExpenseAsync(Expense expense);
+    Task<List<Expense>> DeleteAllAsync();
 }
