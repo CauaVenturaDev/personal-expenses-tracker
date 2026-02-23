@@ -5,6 +5,7 @@ namespace personalExpensesTracker.Infrastructure.Interfaces;
 public interface IExpensesRepository
 {
     Task<Expense> AddExpenseAsync(Expense expense);
+    Task<List<Expense>> GetAllExpensesAsync();
     Task<Expense?> GetExpenseByIdAsync(int id);
     Task<decimal> GetTotalByMonthAsync(int month, int year);
     Task<List<Expense>> GetExpensesByMonthAsync(int month, int year);

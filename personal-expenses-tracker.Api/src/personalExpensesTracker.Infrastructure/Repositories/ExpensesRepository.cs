@@ -18,6 +18,11 @@ public class ExpensesRepository(PersonalExpensesTrackerContext context) : IExpen
         return expense;
     }
 
+    public Task<List<Expense>> GetAllExpensesAsync()
+    {
+       return _context.Expenses.ToListAsync();
+    }
+
 
     // Recupera todas as despesas do banco de dados em uma lista
     public async Task<List<Expense>> GetExpensesByMonthAsync(int month, int year)
@@ -76,5 +81,7 @@ public class ExpensesRepository(PersonalExpensesTrackerContext context) : IExpen
         await _context.SaveChangesAsync();
         return allExpenses;
     }
+
+
 }
 

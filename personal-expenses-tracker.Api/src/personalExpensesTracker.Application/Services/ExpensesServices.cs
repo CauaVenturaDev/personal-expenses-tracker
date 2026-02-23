@@ -21,6 +21,10 @@ public class ExpensesServices(IExpensesRepository repository) : IExpensesService
         return await _respository.AddExpenseAsync(expense);
     }
 
+    public Task<List<Expense>> GetAllExpensesAsync()
+    {
+        return _respository.GetAllExpensesAsync();
+    }
 
     //Lista as despesas por mês e ano
     public Task<List<Expense>> GetByMonthAsync(int month, int year)

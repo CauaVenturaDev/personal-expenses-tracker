@@ -14,6 +14,28 @@ namespace personalExpensesTracker.Api.Controllers
     {
         private readonly IExpensesServices _expensesServices = expensesServices;
 
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] ExpenseCreateDTO expenseCreateDTO)
+        {
+            var expense = new Expense
+            {
+                Description = expenseCreateDTO.Description,
+                Amount = expenseCreateDTO.Amount,
+                Category = expenseCreateDTO.Category,
+                Date = expenseCreateDTO.Date
+            };
+            await _expensesServices.AddAsync(expense);
+            return Ok(expense);
+        }
+
+
+        [HttpGet("todas-as-despesas")]
+
+        public async Task<IActionResult> GetTotalByDay([FromQuery] int mês, [FromQuery] int ano)
+        {
+            var allExpenses = _expensesServices.GetAllExpensesAsync();
+            return Ok(allExpenses);
+        }
 
         [HttpGet("mes-ano")]
         public async Task<IActionResult> Get(int mês, int ano)
@@ -25,7 +47,9 @@ namespace personalExpensesTracker.Api.Controllers
             }
             return Ok(expense);
         }
-        [HttpGet("total")]
+
+
+        [HttpGet("total-do-mês")]
         public async Task<IActionResult> GetTotalByMonth([FromQuery] int mês, [FromQuery] int ano)
         {
             var total = await _expensesServices.GetTotalByMonthAsync(mês, ano);
@@ -43,21 +67,6 @@ namespace personalExpensesTracker.Api.Controllers
         {
             var resultado = await _expensesServices.GetTotalByCategoryAsync(mês, ano);
             return Ok(resultado);
-        }
-
-
-        [HttpPost]
-        public async Task<IActionResult> Post([FromBody] ExpenseCreateDTO expenseCreateDTO)
-        {
-            var expense = new Expense
-            {
-                Description = expenseCreateDTO.Description,
-                Amount = expenseCreateDTO.Amount,
-                Category = expenseCreateDTO.Category,
-                Date = expenseCreateDTO.Date
-            };
-            await _expensesServices.AddAsync(expense);
-            return Ok(expense);
         }
 
 
@@ -80,6 +89,8 @@ namespace personalExpensesTracker.Api.Controllers
             await _expensesServices.DeleteAsync(id);
             return NoContent();
         }
+
+
         [HttpDelete("delete-all")]
         public async Task<IActionResult> DeleteAll()
         {
