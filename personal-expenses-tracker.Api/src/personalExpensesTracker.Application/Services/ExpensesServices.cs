@@ -2,7 +2,6 @@
 using personalExpensesTracker.Application.Interfaces;
 using personalExpensesTracker.Domain.Models;
 using personalExpensesTracker.Infrastructure.Interfaces;
-using personalExpensesTracker.Infrastructure.Repositories;
 
 namespace personalExpensesTracker.Application.Services;
 
@@ -52,7 +51,7 @@ public class ExpensesServices(IExpensesRepository repository) : IExpensesService
 
     // Calcula o total gasto no mês e ano especificados
     public async Task<decimal> GetTotalByMonthAsync(int month, int year)
-    { 
+    {
         return await _respository.GetTotalByMonthAsync(month, year);
     }
 

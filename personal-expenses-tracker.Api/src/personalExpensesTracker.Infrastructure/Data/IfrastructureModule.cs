@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace personalExpensesTracker.Infrastructure;
+namespace personalExpensesTracker.Infrastructure.Data;
 
 public static class IfrastructureModule
 {

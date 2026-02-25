@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using personalExpensesTracker.Domain.Models;
 
-namespace personalExpensesTracker.Infrastructure;
+namespace personalExpensesTracker.Infrastructure.Data;
 
 public partial class PersonalExpensesTrackerContext : DbContext
 {
