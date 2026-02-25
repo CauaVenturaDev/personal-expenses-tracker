@@ -2,9 +2,6 @@
 using personalExpensesTracker.Application.DTOs.ExpenseDTOs.Request;
 using personalExpensesTracker.Application.Interfaces;
 using personalExpensesTracker.Domain.Models;
-using personalExpensesTracker.Infrastructure.Interfaces;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace personalExpensesTracker.Api.Controllers
 {
@@ -29,18 +26,36 @@ namespace personalExpensesTracker.Api.Controllers
         }
 
 
-        [HttpGet("todas-as-despesas")]
-
-        public async Task<IActionResult> GetTotalByDay([FromQuery] int mês, [FromQuery] int ano)
+        [HttpGet("resumo-das-despesas-de-todos-os-meses")]
+        public async Task<IActionResult> GetTotal()
         {
-            var allExpenses = _expensesServices.GetAllExpensesAsync();
-            return Ok(allExpenses);
+            var results = new List<object>();
+
+            for (int year = 2025; year <= DateTime.Now.Year; year++)
+            {
+                for (int month = 1; month <= 12; month++)
+                {
+                    var total = await _expensesServices.GetTotalByMonthAsync(month, year);
+
+                    if (total != 0m)
+                    {
+                        results.Add(new
+                        {
+                            Month = month,
+                            Year = year,
+                            Total = total
+                        });
+                    }
+                }
+            }
+            return Ok(results);
         }
 
-        [HttpGet("mes-ano")]
-        public async Task<IActionResult> Get(int mês, int ano)
+
+        [HttpGet("Despesas-do-mês-Detalhado")]
+        public async Task<IActionResult> Get(int month, int year)
         {
-            var expense = await _expensesServices.GetByMonthAsync(mês, ano);
+            var expense = await _expensesServices.GetByMonthAsync(month, year);
             if (expense == null)
             {
                 return NotFound();
@@ -49,28 +64,28 @@ namespace personalExpensesTracker.Api.Controllers
         }
 
 
-        [HttpGet("total-do-mês")]
-        public async Task<IActionResult> GetTotalByMonth([FromQuery] int mês, [FromQuery] int ano)
+        [HttpGet("valor-total-do-mês")]
+        public async Task<IActionResult> GetTotalByMonth([FromQuery] int month, [FromQuery] int year)
         {
-            var total = await _expensesServices.GetTotalByMonthAsync(mês, ano);
+            var total = await _expensesServices.GetTotalByMonthAsync(month, year);
             return Ok(new
             {
-                Mes = mês,
-                Ano = ano,
+                Month = month,
+                Year = year,
                 Total = total
             });
         }
 
 
-        [HttpGet("total/categoria")]
-        public async Task<ActionResult<List<CategorySumaryExpenseDto>>> GetTotalByCategory([FromQuery] int mês, [FromQuery] int ano)
+        [HttpGet("total-categoria")]
+        public async Task<ActionResult<List<CategorySumaryExpenseDto>>> GetTotalByCategory([FromQuery] int month, [FromQuery] int year)
         {
-            var resultado = await _expensesServices.GetTotalByCategoryAsync(mês, ano);
+            var resultado = await _expensesServices.GetTotalByCategoryAsync(month, year);
             return Ok(resultado);
         }
 
 
-        [HttpPut("{id}")]
+        [HttpPut("atualizacao-de-despesa")]
         public async Task<IActionResult> Update(int id, [FromBody] ExpenseCreateDTO expenseCreateDTO)
         {
             var updated = await _expensesServices.UpdateAsync(id, expenseCreateDTO);
@@ -83,7 +98,7 @@ namespace personalExpensesTracker.Api.Controllers
         }
 
 
-        [HttpDelete("{id}")]
+        [HttpDelete("deletar-despesa")]
         public async Task<IActionResult> Delete(int id)
         {
             await _expensesServices.DeleteAsync(id);

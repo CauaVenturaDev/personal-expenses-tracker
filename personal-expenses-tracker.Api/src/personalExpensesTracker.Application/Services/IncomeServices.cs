@@ -1,5 +1,4 @@
-﻿using personalExpensesTracker.Application.DTOs.ExpenseDTOs.Request;
-using personalExpensesTracker.Application.DTOs.IncomeDTOs.Requests;
+﻿using personalExpensesTracker.Application.DTOs.IncomeDTOs.Requests;
 using personalExpensesTracker.Application.Interfaces;
 using personalExpensesTracker.Domain.Models;
 using personalExpensesTracker.Infrastructure.Interfaces;
@@ -8,6 +7,7 @@ namespace personalExpensesTracker.Application.Services;
 
 public class IncomeServices(IIncomeRepository incomeRepository) : IIncomeServices
 {
+
     private readonly IIncomeRepository _incomeRepository = incomeRepository;
 
     public async Task<Income> AddAsync(Income income)
@@ -18,15 +18,13 @@ public class IncomeServices(IIncomeRepository incomeRepository) : IIncomeService
         }
         return await _incomeRepository.AddIncomeAsync(income);
     }
-    public async Task<List<Income>> GetAllIncomesAsync()
-    {
-        return await _incomeRepository.GetAllIncomes();
-    }
+
 
     public async Task<List<Income>> GetByMonthAsync(int month, int year)
     {
         return await _incomeRepository.GetIncomesByMonthAsync (month, year);
     }
+
 
     public async Task<List<CategorySumaryIncomeDto>> GetTotalByCategoryAsync(int month, int year)
     {
@@ -55,6 +53,7 @@ public class IncomeServices(IIncomeRepository incomeRepository) : IIncomeService
         return await _incomeRepository.GetTotalByMonthAsync(month, year);
     }
 
+
     public async Task<Income> UpdateAsync(int id, IncomeCreateDTO incomeCreateDTO)
     {
         var existingIncome = await _incomeRepository.GetIncomeByIdAsync(id);
@@ -71,6 +70,8 @@ public class IncomeServices(IIncomeRepository incomeRepository) : IIncomeService
         await _incomeRepository.UpdateIncomeAsync(existingIncome);
         return existingIncome;
     }
+
+
     public async Task DeleteAsync(int id)
     {
         var existingIncome = await _incomeRepository.GetIncomeByIdAsync(id);
@@ -80,6 +81,8 @@ public class IncomeServices(IIncomeRepository incomeRepository) : IIncomeService
         }
         await _incomeRepository.DeleteIncomeAsync(existingIncome);
     }
+
+
     public async Task DeleteAllAsync()
     {
         await _incomeRepository.DeleteAllIncomesAsync();

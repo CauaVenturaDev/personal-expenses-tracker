@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using personalExpensesTracker.Domain.Models;
+using personalExpensesTracker.Infrastructure.Data;
 using personalExpensesTracker.Infrastructure.Interfaces;
 
 namespace personalExpensesTracker.Infrastructure.Repositories;
@@ -8,6 +9,7 @@ public class IncomeRepository(PersonalExpensesTrackerContext context) : IIncomeR
 {
     private readonly PersonalExpensesTrackerContext _context = context;
 
+
     public async Task<Income> AddIncomeAsync(Income income)
     {
         await _context.Incomes.AddAsync(income);
@@ -15,22 +17,22 @@ public class IncomeRepository(PersonalExpensesTrackerContext context) : IIncomeR
         return income;
     }
 
-    public async Task<List<Income>> GetAllIncomes()
-    {
-        return await _context.Incomes.ToListAsync();
-    }
 
     public async Task<Income?> GetIncomeByIdAsync(int id)
     {
        return await _context.Incomes.FindAsync(id);
     }
 
+
     public async Task<List<Income>> GetIncomesByMonthAsync(int month, int year)
     {
-        return await _context.Incomes
+        var incomesByMonth = await _context.Incomes
             .Where(i => i.Date.Month == month && i.Date.Year == year)
-            .ToListAsync();
+            .GroupBy(e => e.Date).ToListAsync();
+        return incomesByMonth.SelectMany(i => i).ToList();
+
     }
+
 
     public async Task<decimal> GetTotalByMonthAsync(int month, int year)
     {
@@ -38,6 +40,7 @@ public class IncomeRepository(PersonalExpensesTrackerContext context) : IIncomeR
             .Where(i => i.Date.Month == month && i.Date.Year == year)
             .SumAsync(i => i.Amount);
     }
+
 
     public async Task UpdateIncomeAsync(Income income)
     {
@@ -54,11 +57,13 @@ public class IncomeRepository(PersonalExpensesTrackerContext context) : IIncomeR
         await _context.SaveChangesAsync();
     }
 
+
     public async Task DeleteIncomeAsync(Income income)
     { 
         _context.Incomes.Remove(income);
         await _context.SaveChangesAsync();
     }
+
 
     public async Task<List<Income>> DeleteAllIncomesAsync()
     {

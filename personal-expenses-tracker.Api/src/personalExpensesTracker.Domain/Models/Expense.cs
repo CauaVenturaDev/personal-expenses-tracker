@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace personalExpensesTracker.Domain.Models;
+﻿namespace personalExpensesTracker.Domain.Models;
 
 public partial class Expense
 {

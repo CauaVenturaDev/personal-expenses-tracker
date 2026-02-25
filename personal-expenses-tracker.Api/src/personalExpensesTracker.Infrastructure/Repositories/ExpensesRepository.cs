@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using personalExpensesTracker.Domain.Models;
+using personalExpensesTracker.Infrastructure.Data;
 using personalExpensesTracker.Infrastructure.Interfaces;
 
 
@@ -18,19 +19,14 @@ public class ExpensesRepository(PersonalExpensesTrackerContext context) : IExpen
         return expense;
     }
 
-    public Task<List<Expense>> GetAllExpensesAsync()
-    {
-       return _context.Expenses.ToListAsync();
-    }
-
 
     // Recupera todas as despesas do banco de dados em uma lista
     public async Task<List<Expense>> GetExpensesByMonthAsync(int month, int year)
     {
-        return await _context.Expenses
+        var ExpensesByMonth = await _context.Expenses
             .Where(e => e.Date.Month == month && e.Date.Year == year)
-            .ToListAsync();
-
+            .GroupBy(e => e.Date).ToListAsync();
+        return ExpensesByMonth.SelectMany(g => g).ToList();
     }
 
 
@@ -74,6 +70,7 @@ public class ExpensesRepository(PersonalExpensesTrackerContext context) : IExpen
         await _context.SaveChangesAsync();
     }
 
+
     public async Task<List<Expense>> DeleteAllAsync()
     {
         var allExpenses = await _context.Expenses.ToListAsync();
@@ -81,7 +78,5 @@ public class ExpensesRepository(PersonalExpensesTrackerContext context) : IExpen
         await _context.SaveChangesAsync();
         return allExpenses;
     }
-
-
 }
 

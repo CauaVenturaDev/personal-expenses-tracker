@@ -1,7 +1,6 @@
-using Microsoft.EntityFrameworkCore;
 using personalExpensesTracker.Application.Interfaces;
 using personalExpensesTracker.Application.Services;
-using personalExpensesTracker.Infrastructure;
+using personalExpensesTracker.Infrastructure.Data;
 using personalExpensesTracker.Infrastructure.Interfaces;
 using personalExpensesTracker.Infrastructure.Repositories;
 
