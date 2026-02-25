@@ -5,9 +5,9 @@ using personalExpensesTracker.Infrastructure.Interfaces;
 
 namespace personalExpensesTracker.Application.Services;
 
-public class ExpensesServices(IExpensesRepository repository) : IExpensesServices
+public class ExpensesServices(IRepository<Expense> repository) : IServices<Expense, CategorySumaryExpenseDto, ExpenseCreateDTO>
 {
-    private readonly IExpensesRepository _respository = repository;
+    private readonly IRepository<Expense> _respository = repository;
 
 
     // Adiciona uma nova despesa, validando se o valor é maior que zero
@@ -17,21 +17,21 @@ public class ExpensesServices(IExpensesRepository repository) : IExpensesService
         {
             throw new Exception("Amount must be greater than zero.");
         }
-        return await _respository.AddExpenseAsync(expense);
+        return await _respository.AddAsync(expense);
     }
 
 
     //Lista as despesas por mês e ano
     public Task<List<Expense>> GetByMonthAsync(int month, int year)
     {
-        return _respository.GetExpensesByMonthAsync(month, year);
+        return _respository.GetByMonthAsync(month, year);
     }
 
 
     //Lista as despesas por categoria, total e porcentagem do total mensal
     public async Task<List<CategorySumaryExpenseDto>> GetTotalByCategoryAsync(int month, int year)
     {
-        var expenses = await _respository.GetExpensesByMonthAsync(month, year);
+        var expenses = await _respository.GetByMonthAsync(month, year);
         if (!expenses.Any())
                 return new List<CategorySumaryExpenseDto>();
 
@@ -59,7 +59,7 @@ public class ExpensesServices(IExpensesRepository repository) : IExpensesService
     // Atualiza uma despesa existente
     public async Task<Expense> UpdateAsync(int id, ExpenseCreateDTO dto)
     {
-        var existingExpense = await _respository.GetExpenseByIdAsync(id);
+        var existingExpense = await _respository.GetByIdAsync(id);
 
         if (existingExpense == null)
         {
@@ -70,7 +70,7 @@ public class ExpensesServices(IExpensesRepository repository) : IExpensesService
         existingExpense.Category = dto.Category;
         existingExpense.Date = dto.Date;
         
-        await _respository.UpdateExpenseAsync(existingExpense);
+        await _respository.UpdateAsync(existingExpense);
         return existingExpense;
 
     }
@@ -79,15 +79,17 @@ public class ExpensesServices(IExpensesRepository repository) : IExpensesService
     // Exclui uma despesa existente por id
     public async Task DeleteAsync(int id)
     {
-       var expense = await _respository.GetExpenseByIdAsync(id);
+       var expense = await _respository.GetByIdAsync(id);
 
         if (expense == null)
         {
             throw new KeyNotFoundException($"Expense with id {id} not found.");
         }
-        await _respository.DeleteExpenseAsync(expense);
+        await _respository.DeleteAsync(expense);
     }
 
+
+    // Exclui todas as despesas
     public async Task DeleteAllAsync()
     {
         await _respository.DeleteAllAsync();

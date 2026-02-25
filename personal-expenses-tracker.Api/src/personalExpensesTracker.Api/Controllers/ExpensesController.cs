@@ -7,9 +7,9 @@ namespace personalExpensesTracker.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ExpensesController(IExpensesServices expensesServices) : ControllerBase
+    public class ExpensesController(IServices<Expense, CategorySumaryExpenseDto, ExpenseCreateDTO> expensesServices) : ControllerBase
     {
-        private readonly IExpensesServices _expensesServices = expensesServices;
+        private readonly IServices<Expense, CategorySumaryExpenseDto, ExpenseCreateDTO> _expensesServices = expensesServices;
 
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] ExpenseCreateDTO expenseCreateDTO)
@@ -65,7 +65,9 @@ namespace personalExpensesTracker.Api.Controllers
 
 
         [HttpGet("valor-total-do-mês")]
-        public async Task<IActionResult> GetTotalByMonth([FromQuery] int month, [FromQuery] int year)
+        public async Task<IActionResult> GetTotalByMonth(
+            [FromQuery] int month, 
+            [FromQuery] int year)
         {
             var total = await _expensesServices.GetTotalByMonthAsync(month, year);
             return Ok(new
@@ -78,14 +80,16 @@ namespace personalExpensesTracker.Api.Controllers
 
 
         [HttpGet("total-categoria")]
-        public async Task<ActionResult<List<CategorySumaryExpenseDto>>> GetTotalByCategory([FromQuery] int month, [FromQuery] int year)
+        public async Task<ActionResult<List<CategorySumaryExpenseDto>>> GetTotalByCategory(
+            [FromQuery] int month, 
+            [FromQuery] int year)
         {
             var resultado = await _expensesServices.GetTotalByCategoryAsync(month, year);
             return Ok(resultado);
         }
 
 
-        [HttpPut("atualizacao-de-despesa")]
+        [HttpPut("atualiza-de-despesa")]
         public async Task<IActionResult> Update(int id, [FromBody] ExpenseCreateDTO expenseCreateDTO)
         {
             var updated = await _expensesServices.UpdateAsync(id, expenseCreateDTO);
@@ -98,7 +102,7 @@ namespace personalExpensesTracker.Api.Controllers
         }
 
 
-        [HttpDelete("deletar-despesa")]
+        [HttpDelete("apaga-despesa")]
         public async Task<IActionResult> Delete(int id)
         {
             await _expensesServices.DeleteAsync(id);
@@ -106,7 +110,7 @@ namespace personalExpensesTracker.Api.Controllers
         }
 
 
-        [HttpDelete("delete-all")]
+        [HttpDelete("apaga-all")]
         public async Task<IActionResult> DeleteAll()
         {
             await _expensesServices.DeleteAllAsync();

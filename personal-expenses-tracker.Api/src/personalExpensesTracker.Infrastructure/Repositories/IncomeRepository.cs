@@ -5,26 +5,26 @@ using personalExpensesTracker.Infrastructure.Interfaces;
 
 namespace personalExpensesTracker.Infrastructure.Repositories;
 
-public class IncomeRepository(PersonalExpensesTrackerContext context) : IIncomeRepository
+public class IncomeRepository(PersonalExpensesTrackerContext context) : IRepository<Income>
 {
     private readonly PersonalExpensesTrackerContext _context = context;
 
-
-    public async Task<Income> AddIncomeAsync(Income income)
+    // Adiciona uma nova receita ao banco de dados
+    public async Task<Income> AddAsync(Income income)
     {
         await _context.Incomes.AddAsync(income);
         await _context.SaveChangesAsync();
         return income;
     }
 
-
-    public async Task<Income?> GetIncomeByIdAsync(int id)
+    // Recupera uma receita pelo seu ID
+    public async Task<Income?> GetByIdAsync(int id)
     {
        return await _context.Incomes.FindAsync(id);
     }
 
-
-    public async Task<List<Income>> GetIncomesByMonthAsync(int month, int year)
+    // Recupera todas as receitas do banco de dados
+    public async Task<List<Income>> GetByMonthAsync(int month, int year)
     {
         var incomesByMonth = await _context.Incomes
             .Where(i => i.Date.Month == month && i.Date.Year == year)
@@ -33,7 +33,7 @@ public class IncomeRepository(PersonalExpensesTrackerContext context) : IIncomeR
 
     }
 
-
+    // Calcula o total de receitas para um mês e ano específicos
     public async Task<decimal> GetTotalByMonthAsync(int month, int year)
     {
              return await _context.Incomes
@@ -41,8 +41,8 @@ public class IncomeRepository(PersonalExpensesTrackerContext context) : IIncomeR
             .SumAsync(i => i.Amount);
     }
 
-
-    public async Task UpdateIncomeAsync(Income income)
+    // Atualiza uma receita existente no banco de dados
+    public async Task UpdateAsync(Income income)
     {
         var existingIncome = await _context.Incomes.FindAsync(income.Id);
 
@@ -57,15 +57,15 @@ public class IncomeRepository(PersonalExpensesTrackerContext context) : IIncomeR
         await _context.SaveChangesAsync();
     }
 
-
-    public async Task DeleteIncomeAsync(Income income)
+    // Exclui uma receita do banco de dados
+    public async Task DeleteAsync(Income income)
     { 
         _context.Incomes.Remove(income);
         await _context.SaveChangesAsync();
     }
 
-
-    public async Task<List<Income>> DeleteAllIncomesAsync()
+    // Exclui todas as receitas do banco de dados e retorna a lista de receitas excluídas
+    public async Task<List<Income>> DeleteAllAsync()
     {
         var allIncomes = await _context.Incomes.ToListAsync();
         _context.Incomes.RemoveRange(allIncomes);
