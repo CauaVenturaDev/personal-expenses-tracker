@@ -6,22 +6,24 @@ using personalExpensesTracker.Infrastructure.Interfaces;
 
 namespace personalExpensesTracker.Infrastructure.Repositories;
 
-public class ExpensesRepository(PersonalExpensesTrackerContext context) : IExpensesRepository
+public class ExpensesRepository(PersonalExpensesTrackerContext context) : IRepository<Expense>
 {
     private readonly PersonalExpensesTrackerContext _context = context;
 
 
-    // Adiciona uma nova despesa ao banco de dados
-    public async Task<Expense> AddExpenseAsync(Expense expense)
+    public async Task<Expense> AddAsync(Expense expense)
     {
         await _context.AddAsync(expense);
         await _context.SaveChangesAsync();
         return expense;
     }
 
+    public async Task<List<Expense>> GetAllAsync()
+    {
+        return await _context.Expenses.ToListAsync();
+    }
 
-    // Recupera todas as despesas do banco de dados em uma lista
-    public async Task<List<Expense>> GetExpensesByMonthAsync(int month, int year)
+    public async Task<List<Expense>> GetByMonthAsync(int month, int year)
     {
         var ExpensesByMonth = await _context.Expenses
             .Where(e => e.Date.Month == month && e.Date.Year == year)
@@ -29,8 +31,6 @@ public class ExpensesRepository(PersonalExpensesTrackerContext context) : IExpen
         return ExpensesByMonth.SelectMany(g => g).ToList();
     }
 
-
-    // Calcula o total de despesas para um mês e ano específicos
     public async Task<decimal> GetTotalByMonthAsync(int month, int year)
     {
         return await _context.Expenses
@@ -38,15 +38,12 @@ public class ExpensesRepository(PersonalExpensesTrackerContext context) : IExpen
             .SumAsync(e => e.Amount);
     }
 
-
-    // Recupera uma despesa específica pelo seu id
-    public async Task<Expense?> GetExpenseByIdAsync(int id)
+    public async Task<Expense?> GetByIdAsync(int id)
     {
         return await _context.Expenses.FindAsync(id);
     }
 
-    // Atualiza uma despesa existente no banco de dados
-    public async Task UpdateExpenseAsync(Expense expense)
+    public async Task UpdateAsync(Expense expense)
     {
         var existingExpense = await _context.Expenses.FindAsync(expense.Id);
         if (existingExpense == null)
@@ -63,13 +60,11 @@ public class ExpensesRepository(PersonalExpensesTrackerContext context) : IExpen
 
     }
 
-    // Exclui uma despesa do banco de dados
-    public async Task DeleteExpenseAsync(Expense expense)
+    public async Task DeleteAsync(Expense expense)
     {
         _context.Expenses.Remove(expense);
         await _context.SaveChangesAsync();
     }
-
 
     public async Task<List<Expense>> DeleteAllAsync()
     {

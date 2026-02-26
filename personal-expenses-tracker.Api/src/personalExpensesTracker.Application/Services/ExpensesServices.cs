@@ -1,37 +1,53 @@
-﻿using personalExpensesTracker.Application.DTOs.ExpenseDTOs.Request;
+﻿using Microsoft.EntityFrameworkCore;
+using personalExpensesTracker.Application.DTOs.ExpenseDTOs.Request;
+using personalExpensesTracker.Application.DTOs.IncomeDTOs.Requests;
 using personalExpensesTracker.Application.Interfaces;
 using personalExpensesTracker.Domain.Models;
 using personalExpensesTracker.Infrastructure.Interfaces;
 
 namespace personalExpensesTracker.Application.Services;
 
-public class ExpensesServices(IExpensesRepository repository) : IExpensesServices
+public class ExpensesServices(IRepository<Expense> repository) : IServices<Expense, CategorySumaryExpenseDto, ExpenseCreateDTO, MonthlyExpensesDto>
 {
-    private readonly IExpensesRepository _respository = repository;
+    private readonly IRepository<Expense> _repository = repository;
 
 
-    // Adiciona uma nova despesa, validando se o valor é maior que zero
     public async Task<Expense> AddAsync(Expense expense)
     {
         if (expense.Amount == 0)
         {
             throw new Exception("Amount must be greater than zero.");
         }
-        return await _respository.AddExpenseAsync(expense);
+        return await _repository.AddAsync(expense);
     }
 
+    public async Task<List<MonthlyExpensesDto>> GetAllDetailedAsync()
+    {
+        var allExpenses = await _repository.GetAllAsync();
 
-    //Lista as despesas por mês e ano
+        var grouped = allExpenses
+            .GroupBy(e => new { e.Date.Year, e.Date.Month })
+            .Select(g => new MonthlyExpensesDto
+            {
+                Year = g.Key.Year,
+                Month = g.Key.Month,
+                Expenses = g.ToList()
+            })
+            .OrderBy(x => x.Year)
+            .ThenBy(x => x.Month)
+            .ToList();
+
+        return grouped;
+    }
+
     public Task<List<Expense>> GetByMonthAsync(int month, int year)
     {
-        return _respository.GetExpensesByMonthAsync(month, year);
+        return _repository.GetByMonthAsync(month, year);
     }
 
-
-    //Lista as despesas por categoria, total e porcentagem do total mensal
     public async Task<List<CategorySumaryExpenseDto>> GetTotalByCategoryAsync(int month, int year)
     {
-        var expenses = await _respository.GetExpensesByMonthAsync(month, year);
+        var expenses = await _repository.GetByMonthAsync(month, year);
         if (!expenses.Any())
                 return new List<CategorySumaryExpenseDto>();
 
@@ -48,18 +64,14 @@ public class ExpensesServices(IExpensesRepository repository) : IExpensesService
         return result;
     }
 
-
-    // Calcula o total gasto no mês e ano especificados
     public async Task<decimal> GetTotalByMonthAsync(int month, int year)
     {
-        return await _respository.GetTotalByMonthAsync(month, year);
+        return await _repository.GetTotalByMonthAsync(month, year);
     }
 
-
-    // Atualiza uma despesa existente
     public async Task<Expense> UpdateAsync(int id, ExpenseCreateDTO dto)
     {
-        var existingExpense = await _respository.GetExpenseByIdAsync(id);
+        var existingExpense = await _repository.GetByIdAsync(id);
 
         if (existingExpense == null)
         {
@@ -70,27 +82,25 @@ public class ExpensesServices(IExpensesRepository repository) : IExpensesService
         existingExpense.Category = dto.Category;
         existingExpense.Date = dto.Date;
         
-        await _respository.UpdateExpenseAsync(existingExpense);
+        await _repository.UpdateAsync(existingExpense);
         return existingExpense;
 
     }
 
-
-    // Exclui uma despesa existente por id
     public async Task DeleteAsync(int id)
     {
-       var expense = await _respository.GetExpenseByIdAsync(id);
+       var expense = await _repository.GetByIdAsync(id);
 
         if (expense == null)
         {
             throw new KeyNotFoundException($"Expense with id {id} not found.");
         }
-        await _respository.DeleteExpenseAsync(expense);
+        await _repository.DeleteAsync(expense);
     }
 
     public async Task DeleteAllAsync()
     {
-        await _respository.DeleteAllAsync();
+        await _repository.DeleteAllAsync();
     }
 
 }

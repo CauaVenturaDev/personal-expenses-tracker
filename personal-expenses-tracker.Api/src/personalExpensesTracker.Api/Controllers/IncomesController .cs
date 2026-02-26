@@ -1,19 +1,21 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using personalExpensesTracker.Application.DTOs.ExpenseDTOs.Request;
 using personalExpensesTracker.Application.DTOs.IncomeDTOs.Requests;
 using personalExpensesTracker.Application.Interfaces;
+using personalExpensesTracker.Application.Services;
 using personalExpensesTracker.Domain.Models;
 
 namespace personalExpensesTracker.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class IncomeController(IIncomeServices incomeServices) : ControllerBase
+    public class IncomeController(IServices<Income, CategorySumaryIncomeDto, IncomeCreateDTO, MonthlyIncomesDto> incomeServices) : ControllerBase
     {
-        private readonly IIncomeServices _incomeServices = incomeServices;
+        private readonly IServices<Income, CategorySumaryIncomeDto, IncomeCreateDTO, MonthlyIncomesDto> _incomeServices = incomeServices;
 
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] IncomeCreateDTO incomeCreateDTO)
+        public async Task<IActionResult> Create([FromBody] IncomeCreateDTO incomeCreateDTO)
         {
             var income = new Income
             {
@@ -23,35 +25,19 @@ namespace personalExpensesTracker.Api.Controllers
                 Date = incomeCreateDTO.Date
             };
             await _incomeServices.AddAsync(income);
-            return Ok(income);
+            return Created();
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetTotal()
+        public async Task<ActionResult<List<MonthlyIncomesDto>>> GetAllDetailed()
         {
-            var retults = new List<object>();
-
-            for (int year = 2025; year <= DateTime.Now.Year; year++) 
-            {
-                for (int month = 1; month <= 12; month++)
-                {
-                    var total = await _incomeServices.GetTotalByMonthAsync(month, year);
-                    if (total != 0)
-                    {
-                        retults.Add(new
-                        {
-                            Month = month,
-                            Year = year,
-                            Total = total
-                        });
-                    }
-                }
-            }
-            return Ok(retults);
+            var result = await _incomeServices.GetAllDetailedAsync();
+            return Ok(result);
         }
 
-        [HttpGet("mes-ano")]
-        public async Task<IActionResult> Get(int month, int year)
+
+        [HttpGet("mes")]
+        public async Task<IActionResult> GetMonthlyTotal(int month, int year)
         {
             var income = await _incomeServices.GetByMonthAsync(month, year);
             if (income == null)
@@ -60,8 +46,12 @@ namespace personalExpensesTracker.Api.Controllers
             }
             return Ok(income);
         }
+
+
         [HttpGet("total")]
-        public async Task<IActionResult> GetTotalByMonth([FromQuery] int month, [FromQuery] int year)
+        public async Task<IActionResult> GetTotalByMonth(
+            [FromQuery] int month, 
+            [FromQuery] int year)
         {
             var total = await _incomeServices.GetTotalByMonthAsync(month, year);
             return Ok(new
@@ -72,14 +62,18 @@ namespace personalExpensesTracker.Api.Controllers
             });
         }
 
-        [HttpGet("total/categoria")]
-        public async Task<ActionResult<List<CategorySumaryIncomeDto>>> GetTotalByCategory([FromQuery] int month, [FromQuery] int year)
+
+        [HttpGet("sumario/categoria")]
+        public async Task<ActionResult<List<CategorySumaryIncomeDto>>> GetTotalByCategory(
+            [FromQuery] int month, 
+            [FromQuery] int year)
         {
             var resultado = await _incomeServices.GetTotalByCategoryAsync(month, year);
             return Ok(resultado);
         }
 
-        [HttpPut("atualiza-receita")]
+
+        [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] IncomeCreateDTO incomeCreateDTO)
         { 
             var updated = await _incomeServices.UpdateAsync(id, incomeCreateDTO);
@@ -92,14 +86,15 @@ namespace personalExpensesTracker.Api.Controllers
         }
 
 
-        [HttpDelete("apaga-receita")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             await _incomeServices.DeleteAsync(id);
             return NoContent();
         }
 
-        [HttpDelete("apaga-todas-receitas")]
+
+        [HttpDelete("all")]
         public async Task<IActionResult> DeleteAll()
         {
             await _incomeServices.DeleteAllAsync();

@@ -1,14 +1,16 @@
-﻿using personalExpensesTracker.Application.DTOs.IncomeDTOs.Requests;
+﻿using personalExpensesTracker.Application.DTOs.ExpenseDTOs.Request;
+using personalExpensesTracker.Application.DTOs.IncomeDTOs.Requests;
 using personalExpensesTracker.Application.Interfaces;
 using personalExpensesTracker.Domain.Models;
 using personalExpensesTracker.Infrastructure.Interfaces;
 
 namespace personalExpensesTracker.Application.Services;
 
-public class IncomeServices(IIncomeRepository incomeRepository) : IIncomeServices
+public class IncomeServices(IRepository<Income> repository) : IServices<Income, CategorySumaryIncomeDto, IncomeCreateDTO, MonthlyIncomesDto>
 {
 
-    private readonly IIncomeRepository _incomeRepository = incomeRepository;
+    private readonly IRepository<Income> _repository = repository;
+
 
     public async Task<Income> AddAsync(Income income)
     {
@@ -16,19 +18,36 @@ public class IncomeServices(IIncomeRepository incomeRepository) : IIncomeService
         {
             throw new Exception("Amount must be greater than zero.");
         }
-        return await _incomeRepository.AddIncomeAsync(income);
+        return await _repository.AddAsync(income);
     }
-
 
     public async Task<List<Income>> GetByMonthAsync(int month, int year)
     {
-        return await _incomeRepository.GetIncomesByMonthAsync (month, year);
+        return await _repository.GetByMonthAsync (month, year);
     }
 
+    public async Task<List<MonthlyIncomesDto>> GetAllDetailedAsync()
+    {
+        var allIncomes = await _repository.GetAllAsync();
+
+        var grouped = allIncomes
+            .GroupBy(e => new { e.Date.Year, e.Date.Month })
+            .Select(g => new MonthlyIncomesDto
+            {
+                Year = g.Key.Year,
+                Month = g.Key.Month,
+                Incomes = g.ToList() 
+            })
+            .OrderBy(x => x.Year)
+            .ThenBy(x => x.Month)
+            .ToList();
+
+        return grouped;
+    }
 
     public async Task<List<CategorySumaryIncomeDto>> GetTotalByCategoryAsync(int month, int year)
     {
-        var incomes = await _incomeRepository.GetIncomesByMonthAsync(month, year);
+        var incomes = await _repository.GetByMonthAsync(month, year);
 
         if (!incomes.Any())
         {
@@ -50,13 +69,12 @@ public class IncomeServices(IIncomeRepository incomeRepository) : IIncomeService
 
     public async Task<decimal> GetTotalByMonthAsync(int month, int year)
     {
-        return await _incomeRepository.GetTotalByMonthAsync(month, year);
+        return await _repository.GetTotalByMonthAsync(month, year);
     }
-
 
     public async Task<Income> UpdateAsync(int id, IncomeCreateDTO incomeCreateDTO)
     {
-        var existingIncome = await _incomeRepository.GetIncomeByIdAsync(id);
+        var existingIncome = await _repository.GetByIdAsync(id);
 
         if (existingIncome == null)
         {
@@ -67,25 +85,24 @@ public class IncomeServices(IIncomeRepository incomeRepository) : IIncomeService
         existingIncome.Category = incomeCreateDTO.Category;
         existingIncome.Date = incomeCreateDTO.Date;
 
-        await _incomeRepository.UpdateIncomeAsync(existingIncome);
+        await _repository.UpdateAsync(existingIncome);
         return existingIncome;
     }
 
-
     public async Task DeleteAsync(int id)
     {
-        var existingIncome = await _incomeRepository.GetIncomeByIdAsync(id);
+        var existingIncome = await _repository.GetByIdAsync(id);
         if (existingIncome is null)
         {
             throw new KeyNotFoundException($"Income with id {id} not found.");
         }
-        await _incomeRepository.DeleteIncomeAsync(existingIncome);
+        await _repository.DeleteAsync(existingIncome);
     }
-
 
     public async Task DeleteAllAsync()
     {
-        await _incomeRepository.DeleteAllIncomesAsync();
+        await _repository.DeleteAllAsync();
 
     }
+
 }
