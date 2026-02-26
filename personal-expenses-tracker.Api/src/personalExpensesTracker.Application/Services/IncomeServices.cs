@@ -1,38 +1,53 @@
-﻿using personalExpensesTracker.Application.DTOs.IncomeDTOs.Requests;
+﻿using personalExpensesTracker.Application.DTOs.ExpenseDTOs.Request;
+using personalExpensesTracker.Application.DTOs.IncomeDTOs.Requests;
 using personalExpensesTracker.Application.Interfaces;
 using personalExpensesTracker.Domain.Models;
 using personalExpensesTracker.Infrastructure.Interfaces;
 
 namespace personalExpensesTracker.Application.Services;
 
-public class IncomeServices(IRepository<Income> repository) : IServices<Income, CategorySumaryIncomeDto, IncomeCreateDTO>
+public class IncomeServices(IRepository<Income> repository) : IServices<Income, CategorySumaryIncomeDto, IncomeCreateDTO, MonthlyIncomesDto>
 {
 
-    private readonly IRepository<Income> _incomeRepository = repository;
+    private readonly IRepository<Income> _repository = repository;
 
 
-    // Adiciona uma nova receita, validando se o valor é maior que zero
     public async Task<Income> AddAsync(Income income)
     {
         if (income.Amount == 0)
         {
             throw new Exception("Amount must be greater than zero.");
         }
-        return await _incomeRepository.AddAsync(income);
+        return await _repository.AddAsync(income);
     }
 
-
-    //Lista as despesas por categoria, total e porcentagem do total mensal
     public async Task<List<Income>> GetByMonthAsync(int month, int year)
     {
-        return await _incomeRepository.GetByMonthAsync (month, year);
+        return await _repository.GetByMonthAsync (month, year);
     }
 
+    public async Task<List<MonthlyIncomesDto>> GetAllDetailedAsync()
+    {
+        var allIncomes = await _repository.GetAllAsync();
 
-    //Lista as despesas por categoria, total e porcentagem do total mensal
+        var grouped = allIncomes
+            .GroupBy(e => new { e.Date.Year, e.Date.Month })
+            .Select(g => new MonthlyIncomesDto
+            {
+                Year = g.Key.Year,
+                Month = g.Key.Month,
+                Incomes = g.ToList() 
+            })
+            .OrderBy(x => x.Year)
+            .ThenBy(x => x.Month)
+            .ToList();
+
+        return grouped;
+    }
+
     public async Task<List<CategorySumaryIncomeDto>> GetTotalByCategoryAsync(int month, int year)
     {
-        var incomes = await _incomeRepository.GetByMonthAsync(month, year);
+        var incomes = await _repository.GetByMonthAsync(month, year);
 
         if (!incomes.Any())
         {
@@ -52,18 +67,14 @@ public class IncomeServices(IRepository<Income> repository) : IServices<Income, 
         return results;
     }
 
-
-    // Calcula o total gasto no mês e ano especificados
     public async Task<decimal> GetTotalByMonthAsync(int month, int year)
     {
-        return await _incomeRepository.GetTotalByMonthAsync(month, year);
+        return await _repository.GetTotalByMonthAsync(month, year);
     }
 
-
-    // Atualiza uma despesa existente
     public async Task<Income> UpdateAsync(int id, IncomeCreateDTO incomeCreateDTO)
     {
-        var existingIncome = await _incomeRepository.GetByIdAsync(id);
+        var existingIncome = await _repository.GetByIdAsync(id);
 
         if (existingIncome == null)
         {
@@ -74,27 +85,23 @@ public class IncomeServices(IRepository<Income> repository) : IServices<Income, 
         existingIncome.Category = incomeCreateDTO.Category;
         existingIncome.Date = incomeCreateDTO.Date;
 
-        await _incomeRepository.UpdateAsync(existingIncome);
+        await _repository.UpdateAsync(existingIncome);
         return existingIncome;
     }
 
-
-    // Exclui uma despesa existente por id
     public async Task DeleteAsync(int id)
     {
-        var existingIncome = await _incomeRepository.GetByIdAsync(id);
+        var existingIncome = await _repository.GetByIdAsync(id);
         if (existingIncome is null)
         {
             throw new KeyNotFoundException($"Income with id {id} not found.");
         }
-        await _incomeRepository.DeleteAsync(existingIncome);
+        await _repository.DeleteAsync(existingIncome);
     }
 
-
-    // Exclui todas as despesas do banco de dados
     public async Task DeleteAllAsync()
     {
-        await _incomeRepository.DeleteAllAsync();
+        await _repository.DeleteAllAsync();
 
     }
 
