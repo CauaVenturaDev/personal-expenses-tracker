@@ -45,7 +45,7 @@ namespace personalExpensesTracker.Api.Controllers
                 for (int month = 1; month <= 12; month++)
                 {
                     var expenseTask = await expensesServices.GetTotalByMonthAsync(month, year);
-                    var incomeTask = await  incomeServices.GetTotalByMonthAsync(month, year);
+                    var incomeTask = await incomeServices.GetTotalByMonthAsync(month, year);
 
                     if (expenseTask != 0m || incomeTask != 0m)
                     {
@@ -60,6 +60,63 @@ namespace personalExpensesTracker.Api.Controllers
                     }
                 }
             }
+            return Ok(results);
+        }
+        [HttpGet("Sumario/meses/detalhado")]
+        public async Task<IActionResult> GetDetailedSummary(
+         [FromServices] IServices<Expense, CategorySumaryExpenseDto, ExpenseCreateDTO, MonthlyExpensesDto> expensesServices,
+         [FromServices] IServices<Income, CategorySumaryIncomeDto, IncomeCreateDTO, MonthlyIncomesDto> incomeServices)
+        {
+            var results = new List<object>();
+
+            var allExpenseMonths = await expensesServices.GetAllDetailedAsync().ConfigureAwait(false) ?? new List<MonthlyExpensesDto>();
+            var allIncomeMonths = await incomeServices.GetAllDetailedAsync().ConfigureAwait(false) ?? new List<MonthlyIncomesDto>();
+
+            // Cria dicionários para facilitar busca
+            var expensesDict = allExpenseMonths
+                .Where(e => e != null)
+                .ToDictionary(e => (e.Year, e.Month), e => e);
+
+            var incomesDict = allIncomeMonths
+                .Where(i => i != null)
+                .ToDictionary(i => (i.Year, i.Month), i => i);
+
+            // Junta todas as chaves (ano/mês)
+            var allKeys = expensesDict.Keys
+                .Union(incomesDict.Keys)
+                .ToList();
+
+            foreach (var key in allKeys)
+            {
+                expensesDict.TryGetValue(key, out var expMonth);
+                incomesDict.TryGetValue(key, out var incMonth);
+
+                var expensesList = expMonth?.Expenses ?? new List<Expense>();
+                var incomesList = incMonth?.Incomes ?? new List<Income>();
+
+                if (!expensesList.Any() && !incomesList.Any())
+                    continue;
+
+                decimal totalExpenses = expensesList.Sum(e => e?.Amount ?? 0m);
+                decimal totalIncomes = incomesList.Sum(i => i?.Amount ?? 0m);
+
+                results.Add(new
+                {
+                    Month = key.Month,
+                    Year = key.Year,
+                    Expenses = expensesList,
+                    Incomes = incomesList,
+                    TotalExpenses = totalExpenses,
+                    TotalIncomes = totalIncomes,
+                    Balance = totalIncomes - totalExpenses
+                });
+            }
+
+            results = results
+                .OrderBy(r => ((dynamic)r).Year)
+                .ThenBy(r => ((dynamic)r).Month)
+                .ToList();
+
             return Ok(results);
         }
     }
