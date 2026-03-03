@@ -1,20 +1,19 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using personalExpensesTracker.Application.DTOs.ExpenseDTOs.Request;
-using personalExpensesTracker.Application.Interfaces;
+using personalExpensesTracker.Application.Services;
 using personalExpensesTracker.Domain.Models;
 
 namespace personalExpensesTracker.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ExpensesController(IServices<Expense, CategorySumaryExpenseDto, ExpenseCreateDTO, MonthlyExpensesDto> expensesServices) : ControllerBase
+    public class ExpensesController : ControllerBase
     {
-        private readonly IServices<Expense, CategorySumaryExpenseDto, ExpenseCreateDTO, MonthlyExpensesDto> _expensesServices = expensesServices;
-
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] ExpenseCreateDTO expenseCreateDTO)
+        public async Task<IActionResult> Create(
+            [FromBody] ExpenseCreateRequest expenseCreateDTO
+        )
         {
             var expense = new Expense
             {
@@ -28,21 +27,24 @@ namespace personalExpensesTracker.Api.Controllers
         }
 
         [HttpGet("detailed")]
-        public async Task<ActionResult<List<MonthlyExpensesDto>>> GetAllDetailed()
+        public async Task<ActionResult<IEnumerable<MonthlyExpensesDto>>> GetAllDetailed(
+            [FromServices] IExpensesServices expensesServices
+        )
         {
-            var result = await _expensesServices.GetAllDetailedAsync();
+            var result = await expensesServices.GetAllDetailed();
             return Ok(result);
         }
 
 
         [HttpGet("mes")]
-        public async Task<IActionResult> GetMonthlyTotal(int month, int year)
+        public async Task<IActionResult> GetMonthlyTotal(
+            [FromQuery] int month,
+            [FromQuery] int year,
+            [FromServices] IExpensesServices expensesServices
+        )
         {
-            var expense = await _expensesServices.GetByMonthAsync(month, year);
-            if (expense == null)
-            {
-                return NotFound();
-            }
+            var expense = await expensesServices.GetByMonth(month, year);
+
             return Ok(expense);
         }
 
@@ -73,7 +75,7 @@ namespace personalExpensesTracker.Api.Controllers
 
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] ExpenseCreateDTO expenseCreateDTO)
+        public async Task<IActionResult> Update(int id, [FromBody] ExpenseCreateRequest expenseCreateDTO)
         {
             var updated = await _expensesServices.UpdateAsync(id, expenseCreateDTO);
             if (updated == null)

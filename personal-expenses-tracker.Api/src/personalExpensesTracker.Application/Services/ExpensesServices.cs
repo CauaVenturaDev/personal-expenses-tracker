@@ -1,16 +1,19 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using personalExpensesTracker.Application.DTOs.ExpenseDTOs.Request;
-using personalExpensesTracker.Application.DTOs.IncomeDTOs.Requests;
-using personalExpensesTracker.Application.Interfaces;
 using personalExpensesTracker.Domain.Models;
-using personalExpensesTracker.Infrastructure.Interfaces;
+using personalExpensesTracker.Domain.NonEntity;
+using personalExpensesTracker.Infrastructure.Data;
 
 namespace personalExpensesTracker.Application.Services;
 
-public class ExpensesServices(IRepository<Expense> repository) : IServices<Expense, CategorySumaryExpenseDto, ExpenseCreateDTO, MonthlyExpensesDto>
+public class ExpensesServices : IExpensesServices
 {
-    private readonly IRepository<Expense> _repository = repository;
+    private readonly PersonalExpensesTrackerContext _context;
 
+    public ExpensesServices(PersonalExpensesTrackerContext context)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(PersonalExpensesTrackerContext));
+    }
 
     public async Task<Expense> AddAsync(Expense expense)
     {
@@ -21,35 +24,46 @@ public class ExpensesServices(IRepository<Expense> repository) : IServices<Expen
         return await _repository.AddAsync(expense);
     }
 
-    public async Task<List<MonthlyExpensesDto>> GetAllDetailedAsync()
+    public async Task<IEnumerable<MonthlyExpenses>> GetAllDetailed()
     {
-        var allExpenses = await _repository.GetAllAsync();
-
-        var grouped = allExpenses
+        return await _context.Expenses
             .GroupBy(e => new { e.Date.Year, e.Date.Month })
-            .Select(g => new MonthlyExpensesDto
+            .Select(x => new MonthlyExpenses
             {
-                Year = g.Key.Year,
-                Month = g.Key.Month,
-                Expenses = g.ToList()
+                Year = x.Key.Year,
+                Month = x.Key.Month,
+                Expenses = x
             })
             .OrderBy(x => x.Year)
             .ThenBy(x => x.Month)
-            .ToList();
-
-        return grouped;
+            .ToListAsync();
     }
 
-    public Task<List<Expense>> GetByMonthAsync(int month, int year)
+    public async Task<IEnumerable<Expense>> GetByMonth(int month, int year)
     {
-        return _repository.GetByMonthAsync(month, year);
+        ValidateMonth(month);
+        ValidateYear(year);
+
+        return await _context.Expenses.Where(x => x.Date.Month == month && x.Date.Year == year).ToListAsync() ?? throw new Exception("Expense not founded");
+
+        void ValidateMonth(int month)
+        {
+            if (month <= 0 && month > 12)
+                throw new Exception("Month invalid");
+        }
+
+        void ValidateYear(int year)
+        {
+            if (year <= 2015)
+                throw new Exception("Year invalid, need be more then 2015");
+        }
     }
 
     public async Task<List<CategorySumaryExpenseDto>> GetTotalByCategoryAsync(int month, int year)
     {
         var expenses = await _repository.GetByMonthAsync(month, year);
         if (!expenses.Any())
-                return new List<CategorySumaryExpenseDto>();
+            return new List<CategorySumaryExpenseDto>();
 
         var totalMonth = expenses.Sum(e => e.Amount);
 
@@ -69,7 +83,7 @@ public class ExpensesServices(IRepository<Expense> repository) : IServices<Expen
         return await _repository.GetTotalByMonthAsync(month, year);
     }
 
-    public async Task<Expense> UpdateAsync(int id, ExpenseCreateDTO dto)
+    public async Task<Expense> UpdateAsync(int id, ExpenseCreateRequest dto)
     {
         var existingExpense = await _repository.GetByIdAsync(id);
 
@@ -81,15 +95,14 @@ public class ExpensesServices(IRepository<Expense> repository) : IServices<Expen
         existingExpense.Amount = dto.Amount;
         existingExpense.Category = dto.Category;
         existingExpense.Date = dto.Date;
-        
+
         await _repository.UpdateAsync(existingExpense);
         return existingExpense;
-
     }
 
     public async Task DeleteAsync(int id)
     {
-       var expense = await _repository.GetByIdAsync(id);
+        var expense = await _repository.GetByIdAsync(id);
 
         if (expense == null)
         {
@@ -102,5 +115,4 @@ public class ExpensesServices(IRepository<Expense> repository) : IServices<Expen
     {
         await _repository.DeleteAllAsync();
     }
-
 }

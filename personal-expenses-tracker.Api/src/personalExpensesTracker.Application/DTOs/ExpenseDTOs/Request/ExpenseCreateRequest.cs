@@ -2,10 +2,10 @@
 
 namespace personalExpensesTracker.Application.DTOs.ExpenseDTOs.Request;
 
-public class ExpenseCreateDTO
+public class ExpenseCreateRequest
 {
     public decimal Amount { get; set; }
-    public string Description { get; set; } = string.Empty;
+    public required string Description { get; set; }
     public DateOnly Date { get; set; }
-    public string Category { get; set; } = string.Empty;
+    public required string Category { get; set; }
 }

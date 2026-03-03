@@ -2,7 +2,7 @@
 
 public class CategorySumaryExpenseDto
 {
-    public string Category { get; set; } = string.Empty;
+    public required string Category { get; set; }
     public decimal Total { get; set; }
     public double Percentage { get; set; }
 }

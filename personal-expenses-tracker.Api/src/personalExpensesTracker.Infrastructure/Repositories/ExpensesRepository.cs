@@ -18,7 +18,7 @@ public class ExpensesRepository(PersonalExpensesTrackerContext context) : IRepos
         return expense;
     }
 
-    public async Task<List<Expense>> GetAllAsync()
+    public async Task<IEnumerable<Expense>> GetAllAsync()
     {
         return await _context.Expenses.ToListAsync();
     }

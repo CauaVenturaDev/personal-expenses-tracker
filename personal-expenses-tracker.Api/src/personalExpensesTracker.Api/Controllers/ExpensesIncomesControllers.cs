@@ -15,7 +15,7 @@ namespace personalExpensesTracker.Api.Controllers
         public IActionResult GetTotalByMonth(
             [FromQuery] int? month,
             [FromQuery] int? year,
-            [FromServices] IServices<Expense, CategorySumaryExpenseDto, ExpenseCreateDTO, MonthlyExpensesDto> expensesServices,
+            [FromServices] IServices<Expense, CategorySumaryExpenseDto, ExpenseCreateRequest, MonthlyExpensesDto> expensesServices,
             [FromServices] IServices<Income, CategorySumaryIncomeDto, IncomeCreateDTO, MonthlyIncomesDto> incomeServices)
         {
             month ??= DateTime.Now.Month;
@@ -34,37 +34,38 @@ namespace personalExpensesTracker.Api.Controllers
             });
         }
 
-        [HttpGet("sumario/mensalmente")]
-        public async Task<IActionResult> GetTotal(
-         [FromServices] IServices<Expense, CategorySumaryExpenseDto, ExpenseCreateDTO, MonthlyExpensesDto> expensesServices,
-         [FromServices] IServices<Income, CategorySumaryIncomeDto, IncomeCreateDTO, MonthlyIncomesDto> incomeServices)
-        {
-            var results = new List<object>();
-            for (int year = 2025; year <= DateTime.Now.Year; year++)
-            {
-                for (int month = 1; month <= 12; month++)
-                {
-                    var expenseTask = await expensesServices.GetTotalByMonthAsync(month, year);
-                    var incomeTask = await incomeServices.GetTotalByMonthAsync(month, year);
+        //[HttpGet("sumario/mensalmente")]
+        //public async Task<IActionResult> GetTotal(
+        //    [FromServices] IExpansesService expansesService,
 
-                    if (expenseTask != 0m || incomeTask != 0m)
-                    {
-                        results.Add(new
-                        {
-                            Month = month,
-                            Year = year,
-                            Incomes = incomeTask,
-                            Expenses = expenseTask,
-                            Balance = incomeTask - expenseTask
-                        });
-                    }
-                }
-            }
-            return Ok(results);
-        }
+        //)
+        //{
+        //    var results = new List<object>();
+        //    for (int year = 2025; year <= DateTime.Now.Year; year++)
+        //    {
+        //        for (int month = 1; month <= 12; month++)
+        //        {
+        //            var expenseTask = await expensesServices.GetTotalByMonthAsync(month, year);
+        //            var incomeTask = await incomeServices.GetTotalByMonthAsync(month, year);
+
+        //            if (expenseTask != 0m || incomeTask != 0m)
+        //            {
+        //                results.Add(new
+        //                {
+        //                    Month = month,
+        //                    Year = year,
+        //                    Incomes = incomeTask,
+        //                    Expenses = expenseTask,
+        //                    Balance = incomeTask - expenseTask
+        //                });
+        //            }
+        //        }
+        //    }
+        //    return Ok(results);
+        //}
         [HttpGet("Sumario/meses/detalhado")]
         public async Task<IActionResult> GetDetailedSummary(
-         [FromServices] IServices<Expense, CategorySumaryExpenseDto, ExpenseCreateDTO, MonthlyExpensesDto> expensesServices,
+         [FromServices] IServices<Expense, CategorySumaryExpenseDto, ExpenseCreateRequest, MonthlyExpensesDto> expensesServices,
          [FromServices] IServices<Income, CategorySumaryIncomeDto, IncomeCreateDTO, MonthlyIncomesDto> incomeServices)
         {
             var results = new List<object>();

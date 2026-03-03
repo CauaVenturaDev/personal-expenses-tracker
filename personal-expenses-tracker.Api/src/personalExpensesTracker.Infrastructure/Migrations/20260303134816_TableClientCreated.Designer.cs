@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using personalExpensesTracker.Infrastructure.Data;
@@ -11,9 +12,11 @@ using personalExpensesTracker.Infrastructure.Data;
 namespace personalExpensesTracker.Infrastructure.Migrations
 {
     [DbContext(typeof(PersonalExpensesTrackerContext))]
-    partial class PersonalExpensesTrackerContextModelSnapshot : ModelSnapshot
+    [Migration("20260303134816_TableClientCreated")]
+    partial class TableClientCreated
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
