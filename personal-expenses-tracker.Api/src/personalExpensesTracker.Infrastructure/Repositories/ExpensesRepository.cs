@@ -13,9 +13,6 @@ public class ExpensesRepository(PersonalExpensesTrackerContext context) : IRepos
 
     public async Task<Expense> AddAsync(Expense expense)
     {
-        await _context.AddAsync(expense);
-        await _context.SaveChangesAsync();
-        return expense;
     }
 
     public async Task<IEnumerable<Expense>> GetAllAsync()
@@ -23,14 +20,11 @@ public class ExpensesRepository(PersonalExpensesTrackerContext context) : IRepos
         return await _context.Expenses.ToListAsync();
     }
 
-    public async Task<List<Expense>> GetByMonthAsync(int month, int year)
+    // Refectored
+    /*public async Task<List<Expense>> GetByMonthAsync(int month, int year)
     {
-        var ExpensesByMonth = await _context.Expenses
-            .Where(e => e.Date.Month == month && e.Date.Year == year)
-            .GroupBy(e => e.Date).ToListAsync();
-        return ExpensesByMonth.SelectMany(g => g).ToList();
     }
-
+    */
     public async Task<decimal> GetTotalByMonthAsync(int month, int year)
     {
         return await _context.Expenses

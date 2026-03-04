@@ -21,7 +21,11 @@ public class ExpensesServices : IExpensesServices
         {
             throw new Exception("Amount must be greater than zero.");
         }
-        return await _repository.AddAsync(expense);
+        await _context.Expenses.AddAsync(expense);
+         _context.SaveChanges();
+            return expense;
+
+        });
     }
 
     public async Task<IEnumerable<MonthlyExpenses>> GetAllDetailed()
@@ -59,23 +63,16 @@ public class ExpensesServices : IExpensesServices
         }
     }
 
-    public async Task<List<CategorySumaryExpenseDto>> GetTotalByCategoryAsync(int month, int year)
+    public async Task<IEnumerable<CategorySumaryExpenseDto>> GetTotalByCategoryAsync(int month, int year)
     {
-        var expenses = await _repository.GetByMonthAsync(month, year);
-        if (!expenses.Any())
-            return new List<CategorySumaryExpenseDto>();
-
-        var totalMonth = expenses.Sum(e => e.Amount);
-
-        var result = expenses
+        return await _context.Expenses.Where(x => x.Date.Month == month && x.Date.Year == year)
             .GroupBy(e => e.Category)
             .Select(g => new CategorySumaryExpenseDto
             {
                 Category = g.Key,
                 Total = g.Sum(e => e.Amount),
-                Percentage = (double)(g.Sum(e => e.Amount) / totalMonth) * 100
-            }).ToList();
-        return result;
+                Percentage = (double)(g.Sum(e => e.Amount) / _context.Expenses.Where(x => x.Date.Month == month && x.Date.Year == year).Sum(e => e.Amount)) * 100
+            }).ToListAsync();
     }
 
     public async Task<decimal> GetTotalByMonthAsync(int month, int year)
