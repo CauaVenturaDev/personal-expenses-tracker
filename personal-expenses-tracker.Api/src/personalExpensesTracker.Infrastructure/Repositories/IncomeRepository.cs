@@ -4,27 +4,8 @@ using personalExpensesTracker.Infrastructure.Data;
 
 namespace personalExpensesTracker.Infrastructure.Repositories;
 
-public class IncomeRepository(PersonalExpensesTrackerContext context) : IRepository<Income>
-{
-    private readonly PersonalExpensesTrackerContext _context = context;
 
 
-    public async Task<Income> AddAsync(Income income)
-    {
-        await _context.Incomes.AddAsync(income);
-        await _context.SaveChangesAsync();
-        return income;
-    }
-
-    public async Task<List<Income>> GetAllAsync()
-    {
-        return await _context.Incomes.ToListAsync();
-    }
-
-    public async Task<Income?> GetByIdAsync(int id)
-    {
-       return await _context.Incomes.FindAsync(id);
-    }
 
     public async Task<List<Income>> GetByMonthAsync(int month, int year)
     {

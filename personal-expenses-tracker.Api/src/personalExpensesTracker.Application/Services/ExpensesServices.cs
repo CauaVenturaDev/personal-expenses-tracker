@@ -63,7 +63,8 @@ public class ExpensesServices : IExpensesServices
 
     public async Task<IEnumerable<CategorySumaryExpenseDto>> GetTotalByCategoryAsync(int month, int year)
     {
-        return await _context.Expenses.Where(x => x.Date.Month == month && x.Date.Year == year)
+        return await _context.Expenses
+            .Where(x => x.Date.Month == month && x.Date.Year == year)
             .GroupBy(e => e.Category)
             .Select(g => new CategorySumaryExpenseDto
             {
@@ -99,14 +100,9 @@ public class ExpensesServices : IExpensesServices
     }
 
     public async Task DeleteAsync(int id)
-    {
-        var expenseId = await _context.Expenses.FindAsync(id);
+    { 
 
-        if (expenseId == null)
-        {
-            throw new KeyNotFoundException($"Expense with id {id} not found.");
-        }
-        var expense = await _context.Expenses.Where(x => x.Id == id).FirstOrDefaultAsync();
+        var expense = await _context.Expenses.Where(x => x.Id == id).FirstOrDefaultAsync() ?? throw new Exception("Expense not founded");
 
         _context.Expenses.Remove(expense);
         await _context.SaveChangesAsync();
