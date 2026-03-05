@@ -24,8 +24,6 @@ public class ExpensesServices : IExpensesServices
         await _context.Expenses.AddAsync(expense);
          _context.SaveChanges();
             return expense;
-
-        });
     }
 
     public async Task<IEnumerable<MonthlyExpenses>> GetAllDetailed()
@@ -77,12 +75,15 @@ public class ExpensesServices : IExpensesServices
 
     public async Task<decimal> GetTotalByMonthAsync(int month, int year)
     {
-        return await _repository.GetTotalByMonthAsync(month, year);
+        return await _context.Expenses
+            .Where(x => x.Date.Month == month && x.Date.Year == year)
+            .SumAsync(x => x.Amount);
     }
+
 
     public async Task<Expense> UpdateAsync(int id, ExpenseCreateRequest dto)
     {
-        var existingExpense = await _repository.GetByIdAsync(id);
+        var existingExpense = await _context.Expenses.FindAsync(id);
 
         if (existingExpense == null)
         {
@@ -93,23 +94,29 @@ public class ExpensesServices : IExpensesServices
         existingExpense.Category = dto.Category;
         existingExpense.Date = dto.Date;
 
-        await _repository.UpdateAsync(existingExpense);
+        await _context.SaveChangesAsync();
         return existingExpense;
     }
 
     public async Task DeleteAsync(int id)
     {
-        var expense = await _repository.GetByIdAsync(id);
+        var expenseId = await _context.Expenses.FindAsync(id);
 
-        if (expense == null)
+        if (expenseId == null)
         {
             throw new KeyNotFoundException($"Expense with id {id} not found.");
         }
-        await _repository.DeleteAsync(expense);
+        var expense = await _context.Expenses.Where(x => x.Id == id).FirstOrDefaultAsync();
+
+        _context.Expenses.Remove(expense);
+        await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteAllAsync()
+    public async Task<List<Expense>> DeleteAllAsync()
     {
-        await _repository.DeleteAllAsync();
+        var allExpenses = await _context.Expenses.ToListAsync();
+        _context.Expenses.RemoveRange(allExpenses);
+        await _context.SaveChangesAsync();
+        return allExpenses;
     }
 }

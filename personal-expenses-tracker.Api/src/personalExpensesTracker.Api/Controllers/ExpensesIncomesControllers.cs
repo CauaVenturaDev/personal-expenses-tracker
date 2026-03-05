@@ -16,7 +16,7 @@ namespace personalExpensesTracker.Api.Controllers
             [FromQuery] int? month,
             [FromQuery] int? year,
             [FromServices] IServices<Expense, CategorySumaryExpenseDto, ExpenseCreateRequest, MonthlyExpensesDto> expensesServices,
-            [FromServices] IServices<Income, CategorySumaryIncomeDto, IncomeCreateDTO, MonthlyIncomesDto> incomeServices)
+            [FromServices] IServices<Income, CategorySumaryIncomeDto, IncomeCreateRequest, MonthlyIncomesDto> incomeServices)
         {
             month ??= DateTime.Now.Month;
             year ??= DateTime.Now.Year;
@@ -66,7 +66,7 @@ namespace personalExpensesTracker.Api.Controllers
         [HttpGet("Sumario/meses/detalhado")]
         public async Task<IActionResult> GetDetailedSummary(
          [FromServices] IServices<Expense, CategorySumaryExpenseDto, ExpenseCreateRequest, MonthlyExpensesDto> expensesServices,
-         [FromServices] IServices<Income, CategorySumaryIncomeDto, IncomeCreateDTO, MonthlyIncomesDto> incomeServices)
+         [FromServices] IServices<Income, CategorySumaryIncomeDto, IncomeCreateRequest, MonthlyIncomesDto> incomeServices)
         {
             var results = new List<object>();
 

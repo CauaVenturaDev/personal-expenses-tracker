@@ -9,13 +9,13 @@ namespace personalExpensesTracker.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class IncomeController(IServices<Income, CategorySumaryIncomeDto, IncomeCreateDTO, MonthlyIncomesDto> incomeServices) : ControllerBase
+    public class IncomeController(IServices<Income, CategorySumaryIncomeDto, IncomeCreateRequest, MonthlyIncomesDto> incomeServices) : ControllerBase
     {
-        private readonly IServices<Income, CategorySumaryIncomeDto, IncomeCreateDTO, MonthlyIncomesDto> _incomeServices = incomeServices;
+        private readonly IServices<Income, CategorySumaryIncomeDto, IncomeCreateRequest, MonthlyIncomesDto> _incomeServices = incomeServices;
 
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] IncomeCreateDTO incomeCreateDTO)
+        public async Task<IActionResult> Create([FromBody] IncomeCreateRequest incomeCreateDTO)
         {
             var income = new Income
             {
@@ -74,7 +74,7 @@ namespace personalExpensesTracker.Api.Controllers
 
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] IncomeCreateDTO incomeCreateDTO)
+        public async Task<IActionResult> Update(int id, [FromBody] IncomeCreateRequest incomeCreateDTO)
         { 
             var updated = await _incomeServices.UpdateAsync(id, incomeCreateDTO);
             if (incomeCreateDTO == null)

@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using personalExpensesTracker.Domain.Models;
 using personalExpensesTracker.Infrastructure.Data;
-using personalExpensesTracker.Infrastructure.Interfaces;
 
 namespace personalExpensesTracker.Infrastructure.Repositories;
 
