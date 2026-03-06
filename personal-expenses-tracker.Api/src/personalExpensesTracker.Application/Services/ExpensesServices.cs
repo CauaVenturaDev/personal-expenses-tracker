@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using personalExpensesTracker.Application.DTOs.ExpenseDTOs.Request;
-using personalExpensesTracker.Domain.Models;
+using personalExpensesTracker.Application.Services.Interfaces;
+using personalExpensesTracker.Domain.Entity.Models;
 using personalExpensesTracker.Domain.NonEntity;
 using personalExpensesTracker.Infrastructure.Data;
 
@@ -34,7 +35,7 @@ public class ExpensesServices : IExpensesServices
             {
                 Year = x.Key.Year,
                 Month = x.Key.Month,
-                Expenses = x
+                Expenses = x.ToList()
             })
             .OrderBy(x => x.Year)
             .ThenBy(x => x.Month)

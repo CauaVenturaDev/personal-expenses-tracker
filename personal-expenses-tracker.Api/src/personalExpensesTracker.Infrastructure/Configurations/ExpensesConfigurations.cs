@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using personalExpensesTracker.Domain.Models;
+using personalExpensesTracker.Domain.Entity.Models;
 
 namespace personalExpensesTracker.Infrastructure.Configurations;
 
@@ -8,25 +8,38 @@ public class ExpensesConfigurations : IEntityTypeConfiguration<Expense>
 {
     public void Configure(EntityTypeBuilder<Expense> entity)
     {
-        // Chave primária 
+        // Chave primária
         entity.HasKey(e => e.Id).HasName("expenses_pkey");
-
 
         // Mapeamento da tabela
         entity.ToTable("expenses");
 
-
         // Mapeamento das colunas
-        entity.Property(e => e.Id).HasColumnName("id");
+        entity.Property(e => e.Id)
+            .HasColumnName("id");
+        
+        entity.Property(e => e.ClientId).
+            HasColumnName("client_id");
+
         entity.Property(e => e.Amount)
             .HasPrecision(10, 2)
-            .HasColumnName("amount"); 
+            .HasColumnName("amount");
+
         entity.Property(e => e.Category)
             .HasMaxLength(255)
             .HasColumnName("category");
-        entity.Property(e => e.Date).HasColumnName("date");
+
+        entity.Property(e => e.Date)
+            .HasColumnName("date");
+        
         entity.Property(e => e.Description)
             .HasMaxLength(255)
             .HasColumnName("description");
+
+
+        entity.HasOne<Client>()
+                   .WithMany(c => c.Expenses)
+                   .HasForeignKey(e => e.ClientId)
+                   .HasConstraintName("fk_expenses_client_id");
     }
 }

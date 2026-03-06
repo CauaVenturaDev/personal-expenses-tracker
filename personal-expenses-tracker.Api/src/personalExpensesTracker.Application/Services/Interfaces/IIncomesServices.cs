@@ -1,5 +1,5 @@
 ﻿using personalExpensesTracker.Application.DTOs.IncomeDTOs.Requests;
-using personalExpensesTracker.Domain.Models;
+using personalExpensesTracker.Domain.Entity.Models;
 using personalExpensesTracker.Domain.NonEntity;
 
 namespace personalExpensesTracker.Application.Services.Interfaces
@@ -8,12 +8,12 @@ namespace personalExpensesTracker.Application.Services.Interfaces
     {
         Task<Income> AddAsync(
             Income expense
-            ); 
+            );
 
         Task<IEnumerable<MonthlyIncomes>> GetAllDetailed();
 
         Task<IEnumerable<Income>> GetByMonth(
-            int month, 
+            int month,
             int year
             );
 
@@ -23,12 +23,12 @@ namespace personalExpensesTracker.Application.Services.Interfaces
             );
 
         Task<decimal> GetTotalByMonthAsync(
-            int month, 
+            int month,
             int year
             );
 
         Task<Income> UpdateAsync(
-            int id, 
+            int id,
             IncomeCreateRequest dto
             );
 

@@ -1,5 +1,6 @@
+﻿using personalExpensesTracker.Application;
 using personalExpensesTracker.Infrastructure.Data;
-using personalExpensesTracker.Application;
+using personalExpensesTracker.Api;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,5 +30,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+app.MapClientEndpoints();
 
+app.Run();

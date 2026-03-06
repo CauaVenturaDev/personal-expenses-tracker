@@ -1,6 +1,6 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
-using personalExpensesTracker.Domain.Models;
+using personalExpensesTracker.Domain.Entity.Models;
 
 namespace personalExpensesTracker.Infrastructure.Data;
 
@@ -21,6 +21,5 @@ public partial class PersonalExpensesTrackerContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(PersonalExpensesTrackerContext).Assembly);
-
     }
 }

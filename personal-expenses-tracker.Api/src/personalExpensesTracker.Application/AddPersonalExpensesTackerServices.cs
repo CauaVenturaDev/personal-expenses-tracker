@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using personalExpensesTracker.Application.Services;
+using personalExpensesTracker.Application.Services.Interfaces;
 
 namespace personalExpensesTracker.Application
 {

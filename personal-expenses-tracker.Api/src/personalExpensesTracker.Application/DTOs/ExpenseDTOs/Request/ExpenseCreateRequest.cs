@@ -1,6 +1,4 @@
-﻿using personalExpensesTracker.Domain.Models;
-
-namespace personalExpensesTracker.Application.DTOs.ExpenseDTOs.Request;
+﻿namespace personalExpensesTracker.Application.DTOs.ExpenseDTOs.Request;
 
 public class ExpenseCreateRequest
 {

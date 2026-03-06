@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using personalExpensesTracker.Application.DTOs.ExpenseDTOs.Request;
 using personalExpensesTracker.Application.DTOs.IncomeDTOs.Requests;
-using personalExpensesTracker.Application.Interfaces;
-using personalExpensesTracker.Domain.Models;
+using personalExpensesTracker.Application.Services.Interfaces;
+using personalExpensesTracker.Domain.Entity.Models;
 
 namespace personalExpensesTracker.Api.Controllers
 {
@@ -15,8 +15,8 @@ namespace personalExpensesTracker.Api.Controllers
         public IActionResult GetTotalByMonth(
             [FromQuery] int? month,
             [FromQuery] int? year,
-            [FromServices] IServices<Expense, CategorySumaryExpenseDto, ExpenseCreateRequest, MonthlyExpensesDto> expensesServices,
-            [FromServices] IServices<Income, CategorySumaryIncomeDto, IncomeCreateRequest, MonthlyIncomesDto> incomeServices)
+            [FromServices] IExpensesServices expensesServices,
+            [FromServices] IIncomesServices incomeServices)
         {
             month ??= DateTime.Now.Month;
             year ??= DateTime.Now.Year;
@@ -65,13 +65,14 @@ namespace personalExpensesTracker.Api.Controllers
         //}
         [HttpGet("Sumario/meses/detalhado")]
         public async Task<IActionResult> GetDetailedSummary(
-         [FromServices] IServices<Expense, CategorySumaryExpenseDto, ExpenseCreateRequest, MonthlyExpensesDto> expensesServices,
-         [FromServices] IServices<Income, CategorySumaryIncomeDto, IncomeCreateRequest, MonthlyIncomesDto> incomeServices)
+            [FromServices] IExpensesServices expensesServices,
+            [FromServices] IIncomesServices incomeServices
+            )
         {
             var results = new List<object>();
 
-            var allExpenseMonths = await expensesServices.GetAllDetailedAsync().ConfigureAwait(false) ?? new List<MonthlyExpensesDto>();
-            var allIncomeMonths = await incomeServices.GetAllDetailedAsync().ConfigureAwait(false) ?? new List<MonthlyIncomesDto>();
+            var allExpenseMonths = await expensesServices.GetAllDetailed();
+            var allIncomeMonths = await incomeServices.GetAllDetailed();
 
             // Cria dicionários para facilitar busca
             var expensesDict = allExpenseMonths

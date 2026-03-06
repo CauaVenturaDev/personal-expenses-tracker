@@ -22,30 +22,46 @@ namespace personalExpensesTracker.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("personalExpensesTracker.Domain.Models.Client", b =>
+            modelBuilder.Entity("personalExpensesTracker.Domain.Entity.Models.Client", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
-                        .HasColumnType("text");
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("email");
 
                     b.Property<string>("Name")
-                        .HasColumnType("text");
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("name");
 
                     b.Property<string>("Password")
-                        .HasColumnType("text");
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("password");
 
                     b.Property<string>("Username")
-                        .HasColumnType("text");
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("username");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("clients_pkey");
 
-                    b.ToTable("Client");
+                    b.ToTable("clients", (string)null);
                 });
 
-            modelBuilder.Entity("personalExpensesTracker.Domain.Models.Expense", b =>
+            modelBuilder.Entity("personalExpensesTracker.Domain.Entity.Models.Expense", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -66,7 +82,8 @@ namespace personalExpensesTracker.Infrastructure.Migrations
                         .HasColumnName("category");
 
                     b.Property<Guid>("ClientId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("client_id");
 
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date")
@@ -86,7 +103,7 @@ namespace personalExpensesTracker.Infrastructure.Migrations
                     b.ToTable("expenses", (string)null);
                 });
 
-            modelBuilder.Entity("personalExpensesTracker.Domain.Models.Income", b =>
+            modelBuilder.Entity("personalExpensesTracker.Domain.Entity.Models.Income", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -107,7 +124,8 @@ namespace personalExpensesTracker.Infrastructure.Migrations
                         .HasColumnName("category");
 
                     b.Property<Guid>("ClientId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("client_id");
 
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date")
@@ -127,25 +145,27 @@ namespace personalExpensesTracker.Infrastructure.Migrations
                     b.ToTable("income", (string)null);
                 });
 
-            modelBuilder.Entity("personalExpensesTracker.Domain.Models.Expense", b =>
+            modelBuilder.Entity("personalExpensesTracker.Domain.Entity.Models.Expense", b =>
                 {
-                    b.HasOne("personalExpensesTracker.Domain.Models.Client", null)
+                    b.HasOne("personalExpensesTracker.Domain.Entity.Models.Client", null)
                         .WithMany("Expenses")
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_expenses_client_id");
                 });
 
-            modelBuilder.Entity("personalExpensesTracker.Domain.Models.Income", b =>
+            modelBuilder.Entity("personalExpensesTracker.Domain.Entity.Models.Income", b =>
                 {
-                    b.HasOne("personalExpensesTracker.Domain.Models.Client", null)
+                    b.HasOne("personalExpensesTracker.Domain.Entity.Models.Client", null)
                         .WithMany("Incomes")
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_incomes_client_id");
                 });
 
-            modelBuilder.Entity("personalExpensesTracker.Domain.Models.Client", b =>
+            modelBuilder.Entity("personalExpensesTracker.Domain.Entity.Models.Client", b =>
                 {
                     b.Navigation("Expenses");
 

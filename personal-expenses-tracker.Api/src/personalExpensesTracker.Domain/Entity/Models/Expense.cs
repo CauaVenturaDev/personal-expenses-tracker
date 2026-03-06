@@ -1,4 +1,4 @@
-﻿namespace personalExpensesTracker.Domain.Models;
+﻿namespace personalExpensesTracker.Domain.Entity.Models;
 
 public partial class Expense
 {

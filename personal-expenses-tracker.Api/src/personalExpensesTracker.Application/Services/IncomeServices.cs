@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using personalExpensesTracker.Application.DTOs.IncomeDTOs.Requests;
 using personalExpensesTracker.Application.Services.Interfaces;
-using personalExpensesTracker.Domain.Models;
+using personalExpensesTracker.Domain.Entity.Models;
 using personalExpensesTracker.Domain.NonEntity;
 using personalExpensesTracker.Infrastructure.Data;
 

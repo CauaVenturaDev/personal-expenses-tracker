@@ -1,8 +1,8 @@
 ﻿using personalExpensesTracker.Application.DTOs.ExpenseDTOs.Request;
-using personalExpensesTracker.Domain.Models;
+using personalExpensesTracker.Domain.Entity.Models;
 using personalExpensesTracker.Domain.NonEntity;
 
-namespace personalExpensesTracker.Application.Services
+namespace personalExpensesTracker.Application.Services.Interfaces
 {
     public interface IExpensesServices
     {
@@ -15,6 +15,7 @@ namespace personalExpensesTracker.Application.Services
         Task<IEnumerable<CategorySumaryExpenseDto>> GetTotalByCategoryAsync(int month, int year);
 
         Task<decimal> GetTotalByMonthAsync(int month, int year);
+
         Task<Expense> UpdateAsync(int id, ExpenseCreateRequest dto);
 
         Task DeleteAsync(int id);

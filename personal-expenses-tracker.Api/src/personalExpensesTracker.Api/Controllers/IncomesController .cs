@@ -1,18 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using personalExpensesTracker.Application.DTOs.ExpenseDTOs.Request;
 using personalExpensesTracker.Application.DTOs.IncomeDTOs.Requests;
-using personalExpensesTracker.Application.Interfaces;
-using personalExpensesTracker.Application.Services;
-using personalExpensesTracker.Domain.Models;
+using personalExpensesTracker.Application.Services.Interfaces;
+using personalExpensesTracker.Domain.Entity.Models;
 
 namespace personalExpensesTracker.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class IncomeController(IServices<Income, CategorySumaryIncomeDto, IncomeCreateRequest, MonthlyIncomesDto> incomeServices) : ControllerBase
+    public class IncomeController(IIncomesServices incomeServices) : ControllerBase
     {
-        private readonly IServices<Income, CategorySumaryIncomeDto, IncomeCreateRequest, MonthlyIncomesDto> _incomeServices = incomeServices;
-
+        private readonly IIncomesServices _incomeServices = incomeServices;
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] IncomeCreateRequest incomeCreateDTO)
@@ -31,15 +28,14 @@ namespace personalExpensesTracker.Api.Controllers
         [HttpGet]
         public async Task<ActionResult<List<MonthlyIncomesDto>>> GetAllDetailed()
         {
-            var result = await _incomeServices.GetAllDetailedAsync();
+            var result = await _incomeServices.GetAllDetailed();
             return Ok(result);
         }
-
 
         [HttpGet("mes")]
         public async Task<IActionResult> GetMonthlyTotal(int month, int year)
         {
-            var income = await _incomeServices.GetByMonthAsync(month, year);
+            var income = await _incomeServices.GetByMonth(month, year);
             if (income == null)
             {
                 return NotFound();
@@ -47,10 +43,9 @@ namespace personalExpensesTracker.Api.Controllers
             return Ok(income);
         }
 
-
         [HttpGet("total")]
         public async Task<IActionResult> GetTotalByMonth(
-            [FromQuery] int month, 
+            [FromQuery] int month,
             [FromQuery] int year)
         {
             var total = await _incomeServices.GetTotalByMonthAsync(month, year);
@@ -62,20 +57,18 @@ namespace personalExpensesTracker.Api.Controllers
             });
         }
 
-
         [HttpGet("sumario/categoria")]
         public async Task<ActionResult<List<CategorySumaryIncomeDto>>> GetTotalByCategory(
-            [FromQuery] int month, 
+            [FromQuery] int month,
             [FromQuery] int year)
         {
             var resultado = await _incomeServices.GetTotalByCategoryAsync(month, year);
             return Ok(resultado);
         }
 
-
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] IncomeCreateRequest incomeCreateDTO)
-        { 
+        {
             var updated = await _incomeServices.UpdateAsync(id, incomeCreateDTO);
             if (incomeCreateDTO == null)
             {
@@ -85,14 +78,12 @@ namespace personalExpensesTracker.Api.Controllers
             return Ok(updated);
         }
 
-
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             await _incomeServices.DeleteAsync(id);
             return NoContent();
         }
-
 
         [HttpDelete("all")]
         public async Task<IActionResult> DeleteAll()

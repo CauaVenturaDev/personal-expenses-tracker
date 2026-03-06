@@ -1,4 +1,4 @@
-﻿using personalExpensesTracker.Domain.Models;
+﻿using personalExpensesTracker.Domain.Entity.Models;
 
 namespace personalExpensesTracker.Application.DTOs.IncomeDTOs.Requests;
 
