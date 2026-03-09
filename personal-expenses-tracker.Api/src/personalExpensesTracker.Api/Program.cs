@@ -2,6 +2,8 @@
 using personalExpensesTracker.Infrastructure.Data;
 using personalExpensesTracker.Api;
 
+//Projeto pausado momentaneamente
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.RegisterServices();
